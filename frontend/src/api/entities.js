@@ -94,6 +94,11 @@ export async function resetCircuitBreaker() {
   return res.data;
 }
 
+export async function resetGasHalt() {
+  const res = await axios.post(`${API}/treasury/reset-gas-halt`);
+  return res.data;
+}
+
 export async function getTreasuryHistory() {
   const res = await axios.get(`${API}/treasury/history`);
   return res.data;

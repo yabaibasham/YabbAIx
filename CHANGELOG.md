@@ -1,5 +1,18 @@
 # YABAI Gold-Hunter Changelog
 
+## v2.2.0 — 2026-01-18
+### Added
+- Telegram notification engine (scaffolded — ready for BotFather tokens)
+- Profit Realized alerts with "Ready to Cash Out" PayID instructions
+- Circuit breaker emergency Telegram alerts
+- Gas floor halt emergency Telegram alerts
+- Hard gas floor: 0.005 ETH on Base = FULL HALT, no auto-resume
+- Gas floor manual override endpoint (POST /api/treasury/reset-gas-halt)
+- AUD Cashout Flow guide in Treasury Safety tab
+- PayID tip for CommBank/Bendigo instant transfers
+- Telegram configuration status in watchdog health checks
+- Dual-model strategy: Gemini Flash (monitoring) / GPT-5.2 (verification)
+
 ## v2.1.0 — 2026-01-18
 ### Added
 - Sovereign Vault Treasury system with tiered 30/5 withdrawal protocol

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   getTreasuryStatus, startTreasury, stopTreasury, distributeNow,
-  resetCircuitBreaker, getTreasuryHistory, getWatchdogStatus, triggerWatchdog
+  resetCircuitBreaker, resetGasHalt, getTreasuryHistory, getWatchdogStatus, triggerWatchdog
 } from "@/api/entities";
 import {
   Vault, Play, Square, Banknote, ShieldAlert, ShieldCheck,
-  RefreshCw, ArrowDownToLine, AlertTriangle, Heart, Activity
+  RefreshCw, ArrowDownToLine, AlertTriangle, Heart, Activity,
+  Bell, Fuel, CreditCard
 } from "lucide-react";
 
 export default function Treasury() {
@@ -36,6 +37,7 @@ export default function Treasury() {
   const handleStop = async () => { await stopTreasury(); load(); };
   const handleDistribute = async () => { await distributeNow(); setTimeout(load, 2000); };
   const handleResetBreaker = async () => { await resetCircuitBreaker(); load(); };
+  const handleResetGasHalt = async () => { await resetGasHalt(); load(); };
   const handleWatchdog = async () => { await triggerWatchdog(); setTimeout(load, 1000); };
 
   if (loading) return (
@@ -62,6 +64,11 @@ export default function Treasury() {
             {t.circuit_breaker && (
               <span data-testid="circuit-breaker-alert" className="text-[10px] font-mono px-2 py-0.5 rounded-sm animate-pulse" style={{ color: "#ef4444", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}>
                 CIRCUIT BREAKER
+              </span>
+            )}
+            {t.gas_floor_halt && (
+              <span data-testid="gas-halt-alert" className="text-[10px] font-mono px-2 py-0.5 rounded-sm animate-pulse" style={{ color: "#ef4444", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)" }}>
+                GAS FLOOR HALT
               </span>
             )}
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-sm" style={{
@@ -285,31 +292,87 @@ export default function Treasury() {
       {/* Safety Tab */}
       {tab === "safety" && (
         <div className="space-y-3">
+          {/* Gas Floor Halt Banner */}
+          {t.gas_floor_halt && (
+            <div className="rounded-sm p-5" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
+              <div className="flex items-center gap-2 mb-2">
+                <Fuel size={16} style={{ color: "#ef4444" }} />
+                <span className="text-sm font-black" style={{ color: "#ef4444" }}>GAS FLOOR BREACH — ALL WITHDRAWALS FROZEN</span>
+              </div>
+              <p className="text-xs mb-3" style={{ color: "var(--yb-text-secondary)" }}>
+                Wallet balance dropped below {t.gas_hard_floor_eth || 0.005} ETH on Base. No automated resume.
+                Top up your wallet, then override below.
+              </p>
+              <button data-testid="btn-reset-gas-halt" onClick={handleResetGasHalt}
+                className="text-sm font-bold py-2 px-4 rounded-sm"
+                style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.3)" }}>
+                Manual Override — Re-enable Withdrawals
+              </button>
+            </div>
+          )}
+
+          {/* AUD Cashout Guide */}
+          <div className="rounded-sm p-5" style={{ background: "rgba(255,184,0,0.05)", border: "1px solid rgba(255,184,0,0.15)" }}>
+            <div className="flex items-center gap-2 mb-3">
+              <CreditCard size={16} style={{ color: "var(--yb-gold)" }} />
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--yb-gold)" }}>AUD Cashout Flow</span>
+            </div>
+            <div className="space-y-2">
+              {[
+                { step: "1", label: "Agent finds gold", desc: "Sentinel/Scraper/Janitor discover on-chain or off-chain opportunity" },
+                { step: "2", label: "Janitor withdraws", desc: "30% (first win) or 5% (daily drip) sent to Coinspot Base L2 address" },
+                { step: "3", label: "You get pinged", desc: "Telegram alert: 'Ready to Cash Out' with amount and TX hash" },
+                { step: "4", label: "Withdraw to AUD", desc: "Open Coinspot → Withdraw → Use PayID for instant CommBank/Bendigo transfer" },
+              ].map((s) => (
+                <div key={s.step} className="flex items-start gap-3 py-2" style={{ borderBottom: "1px solid rgba(255,184,0,0.08)" }}>
+                  <div className="w-5 h-5 rounded-sm flex items-center justify-center shrink-0 text-[10px] font-bold" style={{ background: "rgba(255,184,0,0.15)", color: "var(--yb-gold)" }}>
+                    {s.step}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: "var(--yb-text-primary)" }}>{s.label}</p>
+                    <p className="text-[11px]" style={{ color: "var(--yb-text-muted)" }}>{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 rounded-sm p-3" style={{ background: "rgba(255,184,0,0.08)" }}>
+              <p className="text-[10px] font-bold" style={{ color: "var(--yb-gold)" }}>PayID TIP</p>
+              <p className="text-[11px]" style={{ color: "var(--yb-text-secondary)" }}>
+                CommBank and Bendigo both support PayID. Use it for instant AUD transfers from Coinspot.
+                Avoid direct crypto deposits to bank — use the exchange as the bridge.
+              </p>
+            </div>
+          </div>
+
+          {/* Safety Constraints */}
           <div className="rounded-sm p-5" style={{ background: "var(--yb-surface-1)", border: "1px solid var(--yb-border)" }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "var(--yb-text-muted)" }}>Safety Constraints</p>
             <div className="space-y-3">
               {[
-                { label: "Gas Reserve (Base)", value: `${t.gas_reserve_eth || 0.01} ETH`, status: "active", desc: "Working wallet never drops below this on Base L2" },
-                { label: "Gas Reserve (Sui)", value: `${t.gas_reserve_sui || 5} SUI`, status: "active", desc: "Working wallet never drops below this on Sui" },
-                { label: "Circuit Breaker", value: t.circuit_breaker ? "TRIGGERED" : "Armed", status: t.circuit_breaker ? "danger" : "active", desc: "Pauses after 2 consecutive withdrawal failures" },
-                { label: "Daily Max Spend", value: "$50 USD", status: "active", desc: "Operating costs capped per day" },
-                { label: "Withdrawal Destination", value: t.destination_configured ? t.destination_preview : "NOT CONFIGURED", status: t.destination_configured ? "active" : "warning", desc: "Set WITHDRAWAL_DESTINATION in .env" },
-              ].map((s) => (
-                <div key={s.label} className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--yb-border)" }}>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: "var(--yb-text-primary)" }}>{s.label}</p>
-                    <p className="text-[10px]" style={{ color: "var(--yb-text-muted)" }}>{s.desc}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold" style={{ color: s.status === "danger" ? "#ef4444" : s.status === "warning" ? "#f59e0b" : "#22c55e" }}>
+                { label: "Hard Gas Floor (Base)", value: `${t.gas_hard_floor_eth || 0.005} ETH`, status: t.gas_floor_halt ? "danger" : "active", icon: Fuel, desc: "Below this = ALL withdrawals frozen. No auto-resume." },
+                { label: "Gas Reserve (Sui)", value: `${t.gas_reserve_sui || 5} SUI`, status: "active", icon: Fuel, desc: "Minimum balance maintained on Sui network" },
+                { label: "Circuit Breaker", value: t.circuit_breaker ? "TRIGGERED" : "Armed", status: t.circuit_breaker ? "danger" : "active", icon: ShieldAlert, desc: "2 consecutive withdrawal failures = full pause" },
+                { label: "Daily Max Spend", value: "$50 AUD", status: "active", icon: ShieldCheck, desc: "Operating costs capped per day" },
+                { label: "Withdrawal Destination", value: t.destination_configured ? t.destination_preview : "NOT SET", status: t.destination_configured ? "active" : "warning", icon: CreditCard, desc: "Coinspot/Coinbase Base L2 (ERC-20) deposit address" },
+                { label: "Telegram Alerts", value: t.telegram_configured ? "ACTIVE" : "SCAFFOLDED", status: t.telegram_configured ? "active" : "info", icon: Bell, desc: t.telegram_configured ? "Real-time alerts enabled" : "Set TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID in .env" },
+                { label: "Network", value: (t.withdrawal_network || "base").toUpperCase(), status: "active", icon: Activity, desc: "Base L2 — ~$0.01 gas fees vs $5+ on Ethereum mainnet" },
+              ].map((s) => {
+                const Icon = s.icon;
+                return (
+                  <div key={s.label} className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--yb-border)" }}>
+                    <div className="flex items-start gap-2">
+                      <Icon size={14} className="mt-0.5 shrink-0" style={{ color: s.status === "danger" ? "#ef4444" : s.status === "warning" ? "#f59e0b" : s.status === "info" ? "#60a5fa" : "#22c55e" }} />
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: "var(--yb-text-primary)" }}>{s.label}</p>
+                        <p className="text-[10px]" style={{ color: "var(--yb-text-muted)" }}>{s.desc}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold" style={{ color: s.status === "danger" ? "#ef4444" : s.status === "warning" ? "#f59e0b" : s.status === "info" ? "#60a5fa" : "#22c55e" }}>
                       {s.value}
                     </span>
-                    {s.status === "active" && <ShieldCheck size={14} style={{ color: "#22c55e" }} />}
-                    {s.status === "danger" && <ShieldAlert size={14} style={{ color: "#ef4444" }} />}
-                    {s.status === "warning" && <AlertTriangle size={14} style={{ color: "#f59e0b" }} />}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -321,15 +384,17 @@ export default function Treasury() {
             </button>
           )}
 
+          {/* Sovereign Rules */}
           <div className="rounded-sm p-5" style={{ background: "var(--yb-surface-1)", border: "1px solid var(--yb-border)" }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--yb-text-muted)" }}>Sovereign Rules (RULES.md)</p>
             <div className="space-y-2 text-xs font-mono leading-relaxed" style={{ color: "var(--yb-text-secondary)" }}>
-              <p>1. If Net_Profit &gt; $100 AUD → withdraw 30% to destination (Tier 1)</p>
-              <p>2. After Tier 1 fulfilled → switch to 5% recurring (Tier 2)</p>
-              <p>3. Retain 95% as working capital for gas + scaling (Tier 3)</p>
-              <p>4. Gas reserve: 0.01 ETH (Base) / 5 SUI minimum</p>
-              <p>5. Circuit breaker: 2 failed withdrawals = pause + emergency alert</p>
-              <p>6. Watchdog: 60s health checks, auto-restart on transient errors</p>
+              <p>1. Net_Profit &gt; $100 AUD → 30% initial withdrawal to Coinspot Base L2</p>
+              <p>2. After Tier 1 → 5% daily drip of Net_Profit (Tier 2)</p>
+              <p>3. 95% retained as working capital for gas + scaling (Tier 3)</p>
+              <p>4. Hard gas floor: 0.005 ETH on Base = FULL HALT, no auto-resume</p>
+              <p>5. Circuit breaker: 2 failed withdrawals = pause + Telegram emergency</p>
+              <p>6. AUD cashout: Coinspot → PayID → CommBank/Bendigo (manual trigger)</p>
+              <p>7. Model allocation: Gemini Flash (monitoring) / GPT-5.2 (verification)</p>
             </div>
           </div>
         </div>

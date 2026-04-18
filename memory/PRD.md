@@ -31,22 +31,25 @@ Upgrade the YABAI application (autonomous agentic system for Melbourne law firm 
 
 ## What's Been Implemented (2026-01-18)
 ### Backend (FastAPI + MongoDB)
-- 23+ API endpoints (all tested, passing)
+- 25+ API endpoints (all tested, passing)
 - Entity models: Signal, Lead, DigitalAsset, Timeline, GoldFinding, VaultEntry
 - Gold-Hunter workers: sentinel_cycle (GPT-5.2), scraper_cycle (Gemini Flash), janitor_cycle (Claude Sonnet)
-- Treasury system: tiered distribution, circuit breaker, gas reserves
-- Watchdog: 60s health checks, auto-restart on transient errors
+- Treasury system: tiered 30/5/95 distribution, circuit breaker, hard gas floor (0.005 ETH)
+- Telegram notification engine (scaffolded): Profit Realized, Circuit Breaker, Gas Floor alerts
+- Watchdog: 60s health checks, auto-restart, Telegram/destination config monitoring
+- Gas floor halt with manual override endpoint
+- AUD cashout flow: Agent → Coinspot Base L2 → PayID → CommBank/Bendigo
 - Seed data: 5 timelines, 5 gold findings, 3 vault entries
 
 ### Frontend (React + Tailwind)
 - 9 pages: Dashboard, Gold Hunter, Treasury, Control Room, Strike Deck, Rover, Capital Colony, Legal Colony, Partner View
+- Treasury Safety tab: Gas floor, circuit breaker, AUD cashout guide, PayID tip
 - Dark theme (#080808) with gold accents (#FFB800)
-- JetBrains Mono for metrics, Manrope for body text
 - All interactive elements have data-testid attributes
 
 ### Governance Files
-- RULES.md: Sovereign rules for autonomous operation
-- CHANGELOG.md: Version history (v1.0 → v2.0 → v2.1)
+- RULES.md: Sovereign rules with hardened gas floor and bank safety
+- CHANGELOG.md: Version history (v1.0 → v2.0 → v2.1 → v2.2)
 
 ## Prioritized Backlog
 ### P0 (Critical — Next)

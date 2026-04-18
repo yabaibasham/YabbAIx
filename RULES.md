@@ -10,9 +10,10 @@ Autonomous scouting and profit recovery across Base L2 and Sui networks.
 3. **Tier 3 (The Compound):** Retain remaining 95% as working capital for gas, scaling, and deeper scouring.
 
 ## Safety Constraints
-- **Gas Reserve:** Never allow working wallet below 0.01 ETH (Base) or 5 SUI.
-- **Circuit Breaker:** If withdrawal fails twice consecutively, pause treasury loop and log emergency alert.
-- **Daily Max:** Operating costs capped at $50 USD/day.
+- **Hard Gas Floor:** 0.005 ETH on Base = FULL HALT. No automated resume. Manual override only after wallet top-up.
+- **Circuit Breaker:** If withdrawal fails twice consecutively, pause treasury loop, send Telegram emergency alert, and do not resume until manual override.
+- **Daily Max:** Operating costs capped at $50 AUD/day.
+- **Bank Safety:** Always use PayID for Coinspot → CommBank/Bendigo AUD transfers. Never direct crypto deposit to bank.
 
 ## Maintenance Protocol
 - Use 'Fixer' agent for errors, never 'Builder'.
