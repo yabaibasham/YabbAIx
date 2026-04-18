@@ -1,0 +1,93 @@
+{
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string"
+    },
+    "suburb": {
+      "type": "string"
+    },
+    "business_type": {
+      "type": "string"
+    },
+    "sector": {
+      "type": "string",
+      "enum": [
+        "Legal",
+        "Medical/NDIS",
+        "Real Estate",
+        "Other"
+      ]
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "google_rating": {
+      "type": "number"
+    },
+    "review_count": {
+      "type": "number"
+    },
+    "has_schema": {
+      "type": "boolean"
+    },
+    "gap_score": {
+      "type": "number"
+    },
+    "email_subject": {
+      "type": "string"
+    },
+    "email_body": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Discovered",
+        "Email Drafted",
+        "Sent",
+        "Opened",
+        "Replied",
+        "Closed",
+        "Dead"
+      ]
+    },
+    "reply_sentiment": {
+      "type": "string",
+      "enum": [
+        "Positive",
+        "Negative",
+        "Objection-HasTool",
+        "Objection-Budget",
+        "Objection-Timing",
+        "Neutral"
+      ]
+    },
+    "reply_text": {
+      "type": "string"
+    },
+    "voice_variant": {
+      "type": "string"
+    },
+    "impact_page_url": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "revenue": {
+      "type": "number"
+    },
+    "shadow_signal": {
+      "type": "string"
+    },
+    "seek_job_url": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "Lead"
+}

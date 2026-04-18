@@ -1,0 +1,158 @@
+{
+  "project_name": "YABAI Gold-Hunter Layer",
+  "theme": "dark",
+  "archetype": "Archetype 4 (Swiss & High-Contrast) + Gold Accents",
+  "domain": "Finance, AI Autonomous Agents, Crypto/DeFi, Lead Generation for Law Firms",
+  "emotional_tone": "Elite, Autonomous, Relentless, Sophisticated",
+  "typography": {
+    "headings": {
+      "font": "Cabinet Grotesk",
+      "weight": "font-black or font-light (Radical contrast)",
+      "tracking": "tracking-tight",
+      "scale": "text-4xl to text-6xl (clamp)",
+      "usage": "Use for primary page headers and marketing hero sections."
+    },
+    "body": {
+      "font": "Manrope",
+      "weight": "font-normal",
+      "scale": "text-sm to text-base",
+      "usage": "Main UI text, paragraphs, buttons."
+    },
+    "mono": {
+      "font": "JetBrains Mono",
+      "weight": "font-medium",
+      "scale": "text-xs to text-sm",
+      "usage": "Blockchain logs, Swarm Manager terminal, Agent status, Crypto metrics."
+    }
+  },
+  "color_palette": {
+    "background": {
+      "main": "#080808",
+      "surface_1": "#121212",
+      "surface_2": "#1A1A1A",
+      "surface_glass": "rgba(18, 18, 18, 0.7)",
+      "hover": "#1E1E1E"
+    },
+    "primary": {
+      "gold": "#FFB800",
+      "gold_hover": "#D99B00",
+      "gold_glow": "rgba(255, 184, 0, 0.2)"
+    },
+    "accents": {
+      "sentinel": "#60A5FA",
+      "scraper": "#FFB800",
+      "janitor": "#EF4444",
+      "success": "#22C55E",
+      "warning": "#F59E0B",
+      "blockchain_base": "#0052FF",
+      "blockchain_sui": "#4CA2FF"
+    },
+    "text": {
+      "primary": "#F9FAFB",
+      "secondary": "#9CA3AF",
+      "muted": "#52525B",
+      "inverse": "#000000"
+    },
+    "border": {
+      "default": "rgba(255, 255, 255, 0.1)",
+      "active": "rgba(255, 255, 255, 0.3)",
+      "gold": "rgba(255, 184, 0, 0.5)"
+    }
+  },
+  "layout_strategy": {
+    "grid": "MODE B: THE 'CONTROL ROOM' GRID",
+    "spacing": "Tight (gap-4 or gap-6) for dashboards. Generous (p-12 to p-24) for CapitalColony marketing pages.",
+    "borders": "1px solid borders (border-white/10). No soft shadows on cards. Use pure structural lines.",
+    "radius": "rounded-sm or rounded-none for a crisp, high-end technical feel.",
+    "surfaces": {
+      "dashboard_cards": "Flat background (#121212), 1px subtle border, no shadow.",
+      "sticky_nav": "Glassmorphism: bg-black/60 backdrop-blur-xl border-b border-white/10",
+      "active_deals": "The 'Tracing Beam' effect. Glowing gold border for active gold findings."
+    }
+  },
+  "animation": {
+    "interaction": "Micro-interactions for feedback. hover:-translate-y-1 hover:border-white/30 transition-all duration-200.",
+    "pipeline": "Use framer-motion stagger logic for 'PENDING_EXECUTION \u2192 EXECUTED \u2192 COLLECTED'.",
+    "realtime_feed": "Smooth entry animations (opacity 0 to 1, slide up 10px) for incoming blockchain signals."
+  },
+  "icons": {
+    "library": "lucide-react",
+    "stroke_width": 1.5,
+    "instructions": "Use Lucide icons matching the text color or accent color. Do not use multiple colors per icon."
+  },
+  "pages": {
+    "Dashboard": {
+      "description": "Colony overview, Swarm status.",
+      "layout": "Control Room bento grid. Top metrics (col-span-1), Main feed (col-span-2 or 3)."
+    },
+    "ControlRoom": {
+      "description": "Lead CRM for Melbourne law firm.",
+      "layout": "High-density data tables. Manrope body, JetBrains Mono for ID/Date."
+    },
+    "StrikeDeck": {
+      "description": "Sales pipeline.",
+      "layout": "Grid of tracking cards (Gold finding pipeline)."
+    },
+    "Rover": {
+      "description": "Audit generator.",
+      "layout": "Terminal look (Retro-futurism) inside a luxury card. JetBrains mono, progress bars."
+    },
+    "CapitalColony": {
+      "description": "Waitlist landing page.",
+      "layout": "Swiss poster layout. Asymmetrical, massive typography, Hero image overlay (bg-black/50)."
+    },
+    "LegalColony": {
+      "description": "Audit showcase.",
+      "layout": "Gallery style with abstract luxury architecture images."
+    },
+    "PartnerView": {
+      "description": "VIP access.",
+      "layout": "Ultra-minimal, centered login, crystal glass."
+    }
+  },
+  "media": {
+    "hero_gold_abstract": {
+      "url": "https://images.unsplash.com/photo-1709377195497-b2723c8970a9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwyfHxnb2xkJTIwZ2VvbWV0cmljJTIwYWJzdHJhY3QlMjBkYXJrfGVufDB8fHxibGFja3wxNzc2NDg2MTk5fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Black and gold abstract curves.",
+      "usage": "Hero section background for CapitalColony waitlist."
+    },
+    "abstract_architecture": {
+      "url": "https://images.unsplash.com/photo-1588114408222-8f61c53dbf8c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGx1eHVyeSUyMGFyY2hpdGVjdHVyZXxlbnwwfHx8YmxhY2t8MTc3NjQ4NjE4Nnww&ixlib=rb-4.1.0&q=85",
+      "description": "Grayscale photo of building interior.",
+      "usage": "LegalColony audit showcase backdrop."
+    },
+    "cyber_network_glowing": {
+      "url": "https://images.unsplash.com/photo-1764258560300-2346b28b4e7c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxjeWJlciUyMG5ldHdvcmslMjBnbG93aW5nJTIwZGFya3xlbnwwfHx8fDE3NzY0ODYxOTl8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Abstract blue glowing lines on dark background.",
+      "usage": "Swarm Manager background or Autonomous Vault visualizer."
+    },
+    "lawyer_portraits": [
+      {
+        "url": "https://images.unsplash.com/photo-1762291629616-3e2c044c79a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHw0fHxsYXd5ZXIlMjBwb3J0cmFpdCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3NjQ4NjE4Nnww&ixlib=rb-4.1.0&q=85",
+        "role": "Partner Profile 1"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1620668233692-c83e9563f337?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwyfHxsYXd5ZXIlMjBwb3J0cmFpdCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3NjQ4NjE4Nnww&ixlib=rb-4.1.0&q=85",
+        "role": "Partner Profile 2"
+      }
+    ]
+  },
+  "testing_attributes": {
+    "instructions": "All interactive and key informational elements MUST include a data-testid attribute.",
+    "format": "kebab-case, role-based",
+    "examples": [
+      "data-testid=\"swarm-status-indicator\"",
+      "data-testid=\"signal-feed-item\"",
+      "data-testid=\"vault-balance-display\"",
+      "data-testid=\"agent-janitor-log\""
+    ]
+  },
+  "instructions_to_main_agent": [
+    "You are building hybrid system: Lead generation UI mixed with AI Web3 capabilities. Prioritize raw structure for marketing (CapitalColony), use custom Shadcn UI for the dashboard (ControlRoom).",
+    "Ensure the gold highlights (#FFB800) are reserved for actions or specific Gold-Hunter elements. Do not overuse it.",
+    "The Autonomous Vault and Swarm Manager must feel technically dense. Utilize the 'JetBrains Mono' font for all numbers, logs, and metrics.",
+    "Implement pure dark mode (#080808 background) with 1px border cards (#121212 bg). Do not use soft gray shadows.",
+    "Rely ENTIRELY on the provided media URLs for backgrounds and avatars. Missing placeholders are strictly FORBIDDEN.",
+    "Enforce proper contrast on all hover states (e.g., hover:text-white or hover:bg-[#1A1A1A] hover:border-white/30)."
+  ]
+}

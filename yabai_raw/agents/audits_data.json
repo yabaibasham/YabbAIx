@@ -1,0 +1,142 @@
+[
+  {
+    "firm_type": "Family Law",
+    "target_query": "best family lawyer Ringwood divorce settlement advice",
+    "ai_gap": "AI search tools like Perplexity and Gemini pull generic national results for family law queries, missing Ringwood-specific practitioners entirely. Local firms lack structured schema markup, so AI crawlers cannot verify their location, specialty, or trust signals. Without FAQ schema, the firm's common client questions (custody, asset splits) never surface in AI-generated answers.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Family Law\",\"areaServed\":\"Ringwood VIC 3134\",\"legalService\":\"Family Law\",\"priceRange\":\"$$\"}",
+    "faq_q1": "How long does a divorce take in Victoria?",
+    "faq_q2": "What happens to the family home during a separation?",
+    "closer": "For $200 I'll install the exact schema that puts your firm in the AI answer box — not your competitor's.",
+    "roi_estimate": "$1,200 - $3,600/mo"
+  },
+  {
+    "firm_type": "Conveyancing",
+    "target_query": "conveyancer near me Melbourne property settlement 2025",
+    "ai_gap": "Conveyancing is hyper-local and time-sensitive — AI tools default to aggregator sites (Settle Easy, PEXA) instead of independent local conveyancers. Most Melbourne conveyancers have no structured data identifying their suburb coverage, so AI cannot confirm they service the client's postcode. The PEXA digital settlement transition has created fresh client confusion that no local firm's website currently answers in AI-readable format.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Conveyancing\",\"areaServed\":\"Melbourne VIC 3000\",\"legalService\":\"Conveyancing\",\"hasOfferCatalog\":\"Residential & Commercial Settlement\"}",
+    "faq_q1": "What does a conveyancer do that a solicitor doesn't?",
+    "faq_q2": "How much does conveyancing cost in Victoria in 2025?",
+    "closer": "Your competitor down the road is getting 3x the AI referrals — $200 fixes that today.",
+    "roi_estimate": "$900 - $2,800/mo"
+  },
+  {
+    "firm_type": "Wills & Estates",
+    "target_query": "cheap wills lawyer Melbourne estate planning urgent",
+    "ai_gap": "Wills & estates queries are exploding post-COVID as boomers rush to get affairs in order, but AI tools surface government websites and LegalZoom-style platforms instead of local solicitors. Melbourne estate lawyers rarely publish FAQ content answering 'what happens if I die without a will in Victoria' — which is the #1 AI-searched question in this category. Without proper LocalBusiness schema, AI can't distinguish a boutique estate specialist from a general practitioner.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Wills & Estates\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Estate Planning\",\"openingHours\":\"Mo-Fr 09:00-17:00\"}",
+    "faq_q1": "What happens to my estate if I die without a will in Victoria?",
+    "faq_q2": "How much does it cost to update a will in Melbourne?",
+    "closer": "One FAQ block + schema = your firm in the AI answer when 200 Melburnians ask about wills this week.",
+    "roi_estimate": "$600 - $2,000/mo"
+  },
+  {
+    "firm_type": "Criminal Defence",
+    "target_query": "criminal lawyer Melbourne charged with assault urgent help",
+    "ai_gap": "Criminal defence is the highest-urgency legal search — clients are in crisis and need a local lawyer NOW. AI tools like ChatGPT and Gemini give generic legal rights information rather than surfacing specific local criminal defence firms. Ringwood and outer-eastern Melbourne criminal lawyers are almost entirely absent from AI search results despite being closest to Ringwood Magistrates' Court.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Criminal Defence\",\"areaServed\":\"Ringwood VIC 3134\",\"legalService\":\"Criminal Law\",\"telephone\":\"+61-3-XXXX-XXXX\"}",
+    "faq_q1": "Do I need a lawyer if I've been charged with a criminal offence in Victoria?",
+    "faq_q2": "What is the difference between a summary offence and an indictable offence?",
+    "closer": "You're invisible to the 40 people who searched 'criminal lawyer Ringwood' on AI tools this week — $200 changes that.",
+    "roi_estimate": "$2,000 - $6,000/mo"
+  },
+  {
+    "firm_type": "Commercial Law",
+    "target_query": "commercial lawyer Melbourne business contract dispute 2025",
+    "ai_gap": "Commercial law AI queries are dominated by big-city CBD firm results, completely excluding Eastern Suburbs practitioners who often offer better rates and faster turnaround for SMBs. AI tools lack the structured data to identify a firm's industry specialisations (construction, retail, tech startups), so generalist commercial lawyers look identical. Melbourne SMBs searching for contract help in AI tools are being funnelled to $600/hr CBD firms when a $300/hr local firm is a better fit.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Commercial Law\",\"areaServed\":\"Melbourne Eastern Suburbs\",\"legalService\":\"Commercial Law, Contract Disputes\",\"priceRange\":\"$$$\"}",
+    "faq_q1": "What should I do if a business partner breaches our contract in Victoria?",
+    "faq_q2": "How much does commercial litigation cost for small businesses?",
+    "closer": "CBD firms are stealing your SMB clients through AI — $200 puts your firm in front of them first.",
+    "roi_estimate": "$1,500 - $5,000/mo"
+  },
+  {
+    "firm_type": "Employment Law",
+    "target_query": "unfair dismissal lawyer Melbourne no win no fee",
+    "ai_gap": "Unfair dismissal is a hot-button 2025 search driven by Melbourne's wave of post-COVID corporate restructuring. AI tools surface Fair Work Commission information pages instead of local employment lawyers, leaving firms invisible. 'No win no fee' employment lawyers in Melbourne have zero structured FAQ markup, so AI can't confirm who offers this model and who doesn't.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Employment Law\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Unfair Dismissal, Workplace Rights\",\"paymentAccepted\":\"No Win No Fee\"}",
+    "faq_q1": "How long do I have to file an unfair dismissal claim in Australia?",
+    "faq_q2": "What counts as a valid reason for dismissal under the Fair Work Act?",
+    "closer": "Fair Work changed the rules in March 2025 — your FAQ needs updating and your AI presence needs building. $200 does both.",
+    "roi_estimate": "$800 - $2,500/mo"
+  },
+  {
+    "firm_type": "Immigration Law",
+    "target_query": "immigration lawyer Melbourne visa refusal appeal 2025",
+    "ai_gap": "Australia's new visa policy changes in 2025 have triggered a surge in AI searches for immigration lawyers, but Department of Home Affairs pages dominate every AI-generated answer. Melbourne immigration lawyers have no structured FAQ content addressing the specific visa categories clients are panicking about (482, 186, parent visas). Without geographic schema, AI tools cannot confirm whether an immigration lawyer handles Victorian tribunal appeals.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Immigration Law\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Visa Applications, Tribunal Appeals\",\"knowsLanguage\":[\"English\",\"Mandarin\"]}",
+    "faq_q1": "Can I appeal a visa refusal decision in Australia?",
+    "faq_q2": "How long does a partner visa take to process in 2025?",
+    "closer": "Every day your firm isn't in the AI answer box, a panicked visa applicant calls your competitor instead.",
+    "roi_estimate": "$1,000 - $4,000/mo"
+  },
+  {
+    "firm_type": "Personal Injury",
+    "target_query": "personal injury lawyer Melbourne TAC claim how much compensation",
+    "ai_gap": "TAC and WorkCover claims are Victoria-specific and high-value, but AI tools pull national compensation calculators instead of local personal injury lawyers. Melbourne personal injury firms with no schema markup are invisible to AI when clients search for 'how much is my TAC claim worth' — a question AI is now answering incorrectly with generic data. Without FAQ schema, these firms miss the moment of highest client intent.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Personal Injury\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"TAC Claims, WorkCover, Personal Injury\",\"paymentAccepted\":\"No Win No Fee\"}",
+    "faq_q1": "How much compensation can I get for a TAC claim in Victoria?",
+    "faq_q2": "Can I choose my own lawyer for a WorkCover claim?",
+    "closer": "Your TAC clients are Googling on their phone in the hospital — if AI doesn't show your firm, you've already lost the case.",
+    "roi_estimate": "$2,000 - $8,000/mo"
+  },
+  {
+    "firm_type": "Property Disputes",
+    "target_query": "neighbour dispute lawyer Melbourne fence boundary problem",
+    "ai_gap": "Neighbourhood and boundary disputes are hyperlocal by nature — the exact suburb matters for jurisdictional and procedural reasons. AI tools give generic Victorian Civil and Administrative Tribunal (VCAT) information without naming any local lawyer who handles these cases. Melbourne property dispute lawyers have almost zero FAQ schema, leaving VCAT procedure questions completely unanswered by AI with any local attribution.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Property Disputes\",\"areaServed\":\"Melbourne Eastern Suburbs\",\"legalService\":\"VCAT, Boundary Disputes, Easements\",\"telephone\":\"+61-3-XXXX-XXXX\"}",
+    "faq_q1": "How does VCAT handle fence and boundary disputes in Victoria?",
+    "faq_q2": "Can my neighbour build a fence without my consent in Melbourne?",
+    "closer": "VCAT lodgements are up 34% this year — $200 puts your firm on the AI shortlist before they file themselves.",
+    "roi_estimate": "$600 - $1,800/mo"
+  },
+  {
+    "firm_type": "Business Contracts",
+    "target_query": "contract lawyer Melbourne review business agreement startup",
+    "ai_gap": "Melbourne's startup scene is booming post-2024 and founders are using AI tools to review contracts themselves — creating an AI trust gap that local contract lawyers could own. AI tools like ChatGPT give generic contract advice without recommending local lawyers, because no Melbourne contract lawyer has structured their site to intercept this query. The FAQ opportunity is enormous: 'Is this contractor agreement enforceable in Victoria?' is searched 400+ times monthly with zero local lawyer AI attribution.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Business Contracts\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Contract Review, Startup Legal\",\"priceRange\":\"$$\"}",
+    "faq_q1": "Is a verbal contract legally binding in Victoria?",
+    "faq_q2": "What should be in a contractor agreement for an Australian startup?",
+    "closer": "Melbourne founders are trusting ChatGPT over lawyers right now — $200 gets you in front of them before they make a costly mistake.",
+    "roi_estimate": "$700 - $2,200/mo"
+  },
+  {
+    "firm_type": "Intellectual Property",
+    "target_query": "trademark lawyer Melbourne register brand name Australia",
+    "ai_gap": "IP law queries are dominated by IP Australia's government portal in AI results, completely shutting out private trademark and copyright lawyers. Melbourne IP lawyers rarely publish content on the specific friction points clients face (trademark classes, provisional patents, brand name disputes) in AI-readable format. Without schema identifying their specific IP services, these firms are treated as generic commercial lawyers by AI crawlers.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Intellectual Property\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Trademark Registration, Copyright, IP Disputes\",\"sameAs\":\"https://ipaustralia.gov.au\"}",
+    "faq_q1": "How much does it cost to trademark a business name in Australia?",
+    "faq_q2": "What is the difference between a trademark and a copyright in Australia?",
+    "closer": "IP Australia's portal answers their question — your firm should be the next answer. $200 makes that happen.",
+    "roi_estimate": "$500 - $1,600/mo"
+  },
+  {
+    "firm_type": "Debt Recovery",
+    "target_query": "debt recovery lawyer Melbourne unpaid invoice small business",
+    "ai_gap": "Small business debt recovery is a 2025 cash-flow crisis topic — post-COVID payment defaults are surging and Melbourne SMBs are searching AI for fast legal options. AI tools surface AFCA and VCAT self-help content rather than local debt recovery lawyers, because these firms have no FAQ schema addressing the $500-$10,000 small claim corridor. Melbourne debt lawyers who publish structured content on the Magistrates' Court process will own this AI query category entirely.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Debt Recovery\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Debt Recovery, Magistrates Court Claims\",\"priceRange\":\"$$\"}",
+    "faq_q1": "How do I recover an unpaid invoice through the Victorian courts?",
+    "faq_q2": "What is the fastest way to recover a debt under $10,000 in Melbourne?",
+    "closer": "500 Melbourne businesses searched 'debt recovery lawyer' on AI this month and found your competitor. $200 swaps that.",
+    "roi_estimate": "$800 - $2,400/mo"
+  },
+  {
+    "firm_type": "Workplace Injury",
+    "target_query": "WorkCover lawyer Melbourne workers compensation claim rejected",
+    "ai_gap": "WorkCover claim rejections are surging in 2025 as insurers tighten approvals — creating a high-urgency AI search spike that no Melbourne law firm is capturing. AI tools return WorkSafe Victoria government pages without local lawyer attribution, because WorkCover lawyers have virtually no structured FAQ content on the appeals process. A firm that publishes 5 FAQ answers about WorkCover rejections in schema format will dominate this AI search category within 30 days.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] WorkCover Law\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"WorkCover Appeals, Workplace Injury\",\"paymentAccepted\":\"No Win No Fee\"}",
+    "faq_q1": "What can I do if my WorkCover claim is rejected in Victoria?",
+    "faq_q2": "How long does a WorkCover appeal take in Melbourne?",
+    "closer": "WorkSafe rejected 1 in 3 claims last year — those people need your firm and AI is sending them nowhere. $200 fixes that.",
+    "roi_estimate": "$1,500 - $5,000/mo"
+  },
+  {
+    "firm_type": "Strata Disputes",
+    "target_query": "owners corporation dispute lawyer Melbourne strata levy problem",
+    "ai_gap": "Melbourne's apartment boom has created a wave of owners corporation disputes that AI tools have no local legal resource for — government OC pages are the only AI-surfaced results. Victoria's Owners Corporations Act 2006 amendments in late 2024 created new obligations that most OC members don't understand, and no Melbourne strata lawyer is answering these questions in AI-readable FAQ format. Strata dispute lawyers who build structured schema around the new Act amendments will capture every Melbourne apartment owner searching for help.",
+    "fix_schema": "{\"@type\":\"LegalService\",\"name\":\"[Firm] Strata & OC Law\",\"areaServed\":\"Melbourne VIC\",\"legalService\":\"Owners Corporation Disputes, VCAT\",\"knowsAbout\":\"Owners Corporations Act 2006 VIC\"}",
+    "faq_q1": "Can I dispute an owners corporation special levy in Victoria?",
+    "faq_q2": "What are my rights if my owners corporation refuses to repair common property?",
+    "closer": "Every Melbourne apartment owner with an OC problem is asking AI and getting no useful answer — your firm should be that answer.",
+    "roi_estimate": "$600 - $2,000/mo"
+  }
+]

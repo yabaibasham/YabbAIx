@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "timeline_id": {
+      "type": "string"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": [
+        "MarketTrend",
+        "RevenueEvent",
+        "OpportunityDetected",
+        "ThreatDetected",
+        "UserInput"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "description": "Where this signal came from"
+    },
+    "raw_data": {
+      "type": "string"
+    },
+    "score": {
+      "type": "number",
+      "description": "Signal strength 0-100"
+    },
+    "processed": {
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "name": "Signal"
+}

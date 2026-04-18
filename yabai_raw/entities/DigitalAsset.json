@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "properties": {
+    "timeline_id": {
+      "type": "string"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "Waitlist",
+        "Lead Magnet",
+        "SEO Blog Post",
+        "Landing Page"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full generated content \u2014 blog post body, PDF text, or landing page copy"
+    },
+    "url": {
+      "type": "string",
+      "description": "Public URL if published as a mini-app or page"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Draft",
+        "Published",
+        "Live"
+      ]
+    },
+    "signal_at_creation": {
+      "type": "number"
+    },
+    "niche": {
+      "type": "string"
+    },
+    "mrr_estimate": {
+      "type": "string"
+    },
+    "email_captures": {
+      "type": "number",
+      "description": "Number of emails collected (for Waitlist pages)"
+    }
+  },
+  "required": [],
+  "name": "DigitalAsset"
+}

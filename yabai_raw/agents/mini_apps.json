@@ -1,0 +1,27 @@
+{
+  "app_id": "69dc570bef9945f73e942cf0",
+  "slug": "yabai-app-3e942cf0",
+  "pages": {
+    "CapitalColony": {
+      "title": "CapitalColony"
+    },
+    "ControlRoom": {
+      "title": "ControlRoom"
+    },
+    "Dashboard": {
+      "title": "Dashboard"
+    },
+    "LegalColony": {
+      "title": "LegalColony"
+    },
+    "PartnerView": {
+      "title": "PartnerView"
+    },
+    "Rover": {
+      "title": "Rover"
+    },
+    "StrikeDeck": {
+      "title": "StrikeDeck"
+    }
+  }
+}

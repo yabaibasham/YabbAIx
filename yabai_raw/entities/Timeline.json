@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "ID of parent Timeline if this is a branch"
+    },
+    "depth": {
+      "type": "number",
+      "description": "Branch depth level \u2014 0 = root, 1 = first branch, etc."
+    },
+    "branch_logic_state": {
+      "type": "string",
+      "description": "What this timeline is currently doing"
+    },
+    "objective": {
+      "type": "string",
+      "description": "The specific goal or opportunity this timeline is pursuing"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Seed",
+        "Active",
+        "Branching",
+        "Scaling",
+        "Culled"
+      ]
+    },
+    "success_metrics": {
+      "type": "object",
+      "description": "Profit/lead targets and KPIs",
+      "properties": {
+        "profit_target": {
+          "type": "number"
+        },
+        "lead_target": {
+          "type": "number"
+        },
+        "custom_kpi": {
+          "type": "string"
+        }
+      }
+    },
+    "profit_signal": {
+      "type": "number",
+      "description": "Current score 0-100 representing momentum/value"
+    },
+    "cycles_below_threshold": {
+      "type": "number",
+      "description": "How many orchestrator cycles this branch has underperformed"
+    },
+    "last_report": {
+      "type": "string",
+      "description": "Latest findings from the worker loop"
+    },
+    "opportunity_detected": {
+      "type": "boolean",
+      "description": "Worker flagged a sub-branch opportunity"
+    },
+    "opportunity_brief": {
+      "type": "string",
+      "description": "Description of detected opportunity for spawning a child"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [],
+  "name": "Timeline"
+}
