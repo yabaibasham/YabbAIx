@@ -1,51 +1,39 @@
-import { useEffect } from "react";
 import "@/App.css";
+import "@/index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import Nav from "@/components/Nav";
+import Dashboard from "@/pages/Dashboard";
+import GoldHunter from "@/pages/GoldHunter";
+import Treasury from "@/pages/Treasury";
+import ControlRoom from "@/pages/ControlRoom";
+import StrikeDeck from "@/pages/StrikeDeck";
+import Rover from "@/pages/Rover";
+import CapitalColony from "@/pages/CapitalColony";
+import LegalColony from "@/pages/LegalColony";
+import PartnerView from "@/pages/PartnerView";
 
 function App() {
   return (
-    <div className="App">
+    <div style={{ minHeight: "100vh", background: "#080808" }}>
       <BrowserRouter>
+        <Nav />
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/gold-hunter" element={<GoldHunter />} />
+          <Route path="/treasury" element={<Treasury />} />
+          <Route path="/control-room" element={<ControlRoom />} />
+          <Route path="/strike-deck" element={<StrikeDeck />} />
+          <Route path="/rover" element={<Rover />} />
+          <Route path="/capital-colony" element={<CapitalColony />} />
+          <Route path="/legal-colony" element={<LegalColony />} />
+          <Route path="/partner-view" element={<PartnerView />} />
         </Routes>
+        <footer
+          className="mt-16 py-5 text-center text-[10px] tracking-widest uppercase"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.1)" }}
+        >
+          YABAI · Gold-Hunter Swarm · Sentinel / Scraper / Janitor · 24/7
+        </footer>
       </BrowserRouter>
     </div>
   );
