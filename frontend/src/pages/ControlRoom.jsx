@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Lead } from "@/api/entities";
-import { Copy, Check, Trash2, Send, MessageSquare, Download } from "lucide-react";
+import { Lead, createCheckout } from "@/api/entities";
+import { Copy, Check, Trash2, Send, MessageSquare, Download, CreditCard } from "lucide-react";
 
 const LAW_AUDITS = {
   "blackburn law group": { hours: 15, cost: "$7,200", score: 95, type: "Corporate & M&A", gap: "Due diligence document review is 100% manual", fix: "M&A due diligence AI" },
@@ -219,7 +219,19 @@ export default function ControlRoom() {
                         {lead.status === "Scouted" && <button onClick={() => { const e = buildEmail(lead); Lead.update(lead.id, { email_subject: e.subject, email_body: e.body, status: "Email Drafted" }).then(load); }} className="text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(96,165,250,0.08)", color: "#60a5fa", border: "1px solid rgba(96,165,250,0.2)" }}>Draft email</button>}
                         {lead.status === "Email Drafted" && <button onClick={() => updateStatus(lead, "Contacted")} className="text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(251,191,36,0.08)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}>Mark sent</button>}
                         <button onClick={() => updateStatus(lead, "Replied")} className="text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(167,139,250,0.08)", color: "#a78bfa", border: "1px solid rgba(167,139,250,0.2)" }}>Got reply</button>
-                        {["Contacted", "Replied"].includes(lead.status) && <button onClick={() => updateStatus(lead, "Closed", { revenue: 1500 })} className="text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(34,197,94,0.08)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>Closed $1,500</button>}
+                        {["Contacted", "Replied"].includes(lead.status) && (
+                          <>
+                            <button onClick={() => updateStatus(lead, "Closed", { revenue: 1500 })} className="text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(34,197,94,0.08)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>Closed $1,500</button>
+                            <button data-testid={`invoice-audit-${lead.id}`} onClick={async () => { try { const r = await createCheckout("audit", lead.id); if (r.url) window.open(r.url, "_blank"); } catch (e) { showToast("Payment error", "err"); } }}
+                              className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(255,184,0,0.08)", color: "var(--yb-gold)", border: "1px solid rgba(255,184,0,0.2)" }}>
+                              <CreditCard size={10} /> $97 Audit
+                            </button>
+                            <button data-testid={`invoice-retainer-${lead.id}`} onClick={async () => { try { const r = await createCheckout("retainer", lead.id); if (r.url) window.open(r.url, "_blank"); } catch (e) { showToast("Payment error", "err"); } }}
+                              className="flex items-center gap-1 text-[11px] px-3 py-1.5 rounded-sm" style={{ background: "rgba(255,184,0,0.12)", color: "var(--yb-gold)", border: "1px solid rgba(255,184,0,0.3)" }}>
+                              <CreditCard size={10} /> $1,500 Retainer
+                            </button>
+                          </>
+                        )}
                         <button onClick={() => deleteLead(lead)} className="text-[11px] px-3 py-1.5 rounded-sm ml-auto" style={{ color: "var(--yb-text-muted)" }}><Trash2 size={12} /></button>
                       </div>
                     )}

@@ -31,25 +31,27 @@ Upgrade the YABAI application (autonomous agentic system for Melbourne law firm 
 
 ## What's Been Implemented (2026-01-18)
 ### Backend (FastAPI + MongoDB)
-- 25+ API endpoints (all tested, passing)
+- 30+ API endpoints (all tested, passing)
+- Stripe Checkout integration: $97 audit + $1,500 retainer packages
+- 95/5 Revenue Split: Auto-routes 95% to owner, 5% to Reinvestment Vault
+- Payment transaction tracking (payment_transactions collection)
 - Entity models: Signal, Lead, DigitalAsset, Timeline, GoldFinding, VaultEntry
 - Gold-Hunter workers: sentinel_cycle (GPT-5.2), scraper_cycle (Gemini Flash), janitor_cycle (Claude Sonnet)
-- Treasury system: tiered 30/5/95 distribution, circuit breaker, hard gas floor (0.005 ETH)
-- Telegram notification engine (scaffolded): Profit Realized, Circuit Breaker, Gas Floor alerts
-- Watchdog: 60s health checks, auto-restart, Telegram/destination config monitoring
-- Gas floor halt with manual override endpoint
-- AUD cashout flow: Agent → Coinspot Base L2 → PayID → CommBank/Bendigo
-- Seed data: 5 timelines, 5 gold findings, 3 vault entries
+- Treasury: tiered 30/5/95 distribution, circuit breaker, hard gas floor (0.005 ETH)
+- Telegram notification engine (scaffolded): Profit Realized, Circuit Breaker, Gas Floor, Payment alerts
+- Watchdog: 60s health checks, auto-restart, config monitoring
+- Stripe webhook handler for payment events
 
 ### Frontend (React + Tailwind)
-- 9 pages: Dashboard, Gold Hunter, Treasury, Control Room, Strike Deck, Rover, Capital Colony, Legal Colony, Partner View
-- Treasury Safety tab: Gas floor, circuit breaker, AUD cashout guide, PayID tip
+- 10 pages: Dashboard, Gold Hunter, Treasury, Control Room, Strike Deck, Rover, Capital Colony, Legal Colony, Partner View, Payment Success
+- Control Room: Stripe payment buttons ($97 Audit, $1,500 Retainer) on lead cards
+- Payment Success: Polling status, 95/5 split display
+- Treasury Safety: AUD Cashout Flow guide, PayID tip, gas floor override
 - Dark theme (#080808) with gold accents (#FFB800)
-- All interactive elements have data-testid attributes
 
-### Governance Files
-- RULES.md: Sovereign rules with hardened gas floor and bank safety
-- CHANGELOG.md: Version history (v1.0 → v2.0 → v2.1 → v2.2)
+### Governance
+- RULES.md: Sovereign rules with 95/5 split, gas floor, bank safety
+- CHANGELOG.md: v1.0 → v2.0 → v2.1 → v2.2 → v2.3
 
 ## Prioritized Backlog
 ### P0 (Critical — Next)

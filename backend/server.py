@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -1217,6 +1217,226 @@ async def get_watchdog_status():
 async def trigger_watchdog(background_tasks: BackgroundTasks):
     background_tasks.add_task(watchdog_cycle)
     return {"message": "Watchdog health check triggered"}
+
+# ── STRIPE PAYMENT SYSTEM (95/5 Revenue Split) ────────────────────────────────
+
+PAYMENT_PACKAGES = {
+    "audit": {"name": "AI Search Gap Audit", "amount": 97.00, "currency": "aud", "description": "14-point AI gap analysis for your practice area"},
+    "retainer": {"name": "AI Implementation Retainer", "amount": 1500.00, "currency": "aud", "description": "48hr AI search presence fix — schema, FAQ blocks, and document automation"},
+}
+
+REVENUE_SPLIT = {"owner": 0.95, "reinvestment": 0.05}
+
+# Reinvestment vault tracking (in-memory, persisted via vault_entries)
+reinvestment_vault = {"balance": 0.0, "total_collected": 0.0}
+
+class PaymentRequest(BaseModel):
+    package_id: str
+    lead_id: Optional[str] = None
+    origin_url: str
+
+@api_router.post("/payments/checkout")
+async def create_checkout(data: PaymentRequest, request: Request):
+    """Create Stripe checkout session for audit or retainer"""
+    if data.package_id not in PAYMENT_PACKAGES:
+        raise HTTPException(400, f"Invalid package: {data.package_id}. Options: {list(PAYMENT_PACKAGES.keys())}")
+
+    package = PAYMENT_PACKAGES[data.package_id]
+    stripe_key = os.environ.get("STRIPE_API_KEY", "")
+    if not stripe_key:
+        raise HTTPException(500, "Stripe not configured")
+
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+
+        host_url = data.origin_url.rstrip("/")
+        success_url = f"{host_url}/payment-success?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{host_url}/control-room"
+        webhook_url = f"{str(request.base_url).rstrip('/')}/api/webhook/stripe"
+
+        stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+
+        checkout_req = CheckoutSessionRequest(
+            amount=package["amount"],
+            currency=package["currency"],
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "package_id": data.package_id,
+                "package_name": package["name"],
+                "lead_id": data.lead_id or "",
+                "revenue_split": "95_5",
+            },
+        )
+        session = await stripe_checkout.create_checkout_session(checkout_req)
+
+        # Record pending transaction
+        tx = {
+            "id": str(uuid.uuid4()),
+            "session_id": session.session_id,
+            "package_id": data.package_id,
+            "package_name": package["name"],
+            "amount": package["amount"],
+            "currency": package["currency"],
+            "owner_share": round(package["amount"] * REVENUE_SPLIT["owner"], 2),
+            "reinvestment_share": round(package["amount"] * REVENUE_SPLIT["reinvestment"], 2),
+            "lead_id": data.lead_id or "",
+            "payment_status": "initiated",
+            "created_date": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.payment_transactions.insert_one(tx)
+        tx.pop("_id", None)
+
+        return {"url": session.url, "session_id": session.session_id}
+    except Exception as e:
+        logger.error(f"Stripe checkout error: {e}")
+        raise HTTPException(500, f"Payment error: {str(e)}")
+
+@api_router.get("/payments/status/{session_id}")
+async def payment_status(session_id: str):
+    """Check payment status and update 95/5 split"""
+    stripe_key = os.environ.get("STRIPE_API_KEY", "")
+    if not stripe_key:
+        raise HTTPException(500, "Stripe not configured")
+
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout
+
+        webhook_url = ""
+        stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+        status = await stripe_checkout.get_checkout_status(session_id)
+
+        # Update transaction in DB
+        tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        if tx and tx.get("payment_status") != "paid" and status.payment_status == "paid":
+            amount = tx["amount"]
+            owner_share = round(amount * REVENUE_SPLIT["owner"], 2)
+            reinvest_share = round(amount * REVENUE_SPLIT["reinvestment"], 2)
+
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {"payment_status": "paid", "status": status.status}},
+            )
+
+            # Log owner income to vault
+            owner_entry = VaultEntry(
+                source=f"Stripe: {tx['package_name']} (95%)",
+                amount=owner_share,
+                currency="AUD",
+                entry_type="income",
+                network="fiat",
+                agent_role="stripe",
+                notes=f"95% of ${amount} {tx['package_id']} payment. Lead: {tx.get('lead_id', 'direct')}",
+            )
+            doc = owner_entry.model_dump()
+            await db.vault_entries.insert_one(doc)
+            doc.pop("_id", None)
+
+            # Log reinvestment to vault
+            reinvest_entry = VaultEntry(
+                source=f"Reinvestment Vault: {tx['package_name']} (5%)",
+                amount=reinvest_share,
+                currency="AUD",
+                entry_type="reinvestment",
+                network="fiat",
+                agent_role="treasurer",
+                notes=f"5% of ${amount} → Project Reinvestment Vault. Auto-collected.",
+            )
+            doc2 = reinvest_entry.model_dump()
+            await db.vault_entries.insert_one(doc2)
+            doc2.pop("_id", None)
+
+            reinvestment_vault["balance"] += reinvest_share
+            reinvestment_vault["total_collected"] += reinvest_share
+
+            # Log revenue signal
+            signal = Signal(
+                signal_type="RevenueEvent",
+                source=f"Stripe Payment: {tx['package_name']}",
+                raw_data=f"${amount} AUD received. Owner: ${owner_share}, Reinvest: ${reinvest_share}",
+                score=95,
+                estimated_profit=owner_share,
+                discovery_source="Web",
+            )
+            sig_doc = signal.model_dump()
+            await db.signals.insert_one(sig_doc)
+            sig_doc.pop("_id", None)
+
+            # Update lead status if linked
+            if tx.get("lead_id"):
+                await db.leads.update_one(
+                    {"id": tx["lead_id"]},
+                    {"$set": {"status": "Closed", "revenue": amount}},
+                )
+
+            # Telegram notification
+            await send_telegram(
+                f"*YABAI — PAYMENT RECEIVED*\n\n"
+                f"*Package:* {tx['package_name']}\n"
+                f"*Total:* ${amount} AUD\n"
+                f"*Your cut (95%):* ${owner_share} AUD\n"
+                f"*Reinvestment (5%):* ${reinvest_share} AUD\n"
+                f"*Vault Balance:* ${reinvestment_vault['balance']:.2f}\n\n"
+                f"_Revenue split auto-applied._"
+            )
+
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount_total": status.amount_total,
+            "currency": status.currency,
+            "metadata": status.metadata,
+        }
+    except Exception as e:
+        logger.error(f"Payment status error: {e}")
+        raise HTTPException(500, str(e))
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events"""
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout
+
+        stripe_key = os.environ.get("STRIPE_API_KEY", "")
+        host_url = str(request.base_url).rstrip("/")
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+
+        body = await request.body()
+        sig = request.headers.get("Stripe-Signature", "")
+        event = await stripe_checkout.handle_webhook(body, sig)
+
+        logger.info(f"Stripe webhook: {event.event_type} - {event.session_id}")
+        return {"received": True}
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        return {"received": True}
+
+@api_router.get("/payments/history")
+async def payment_history():
+    """Get all payment transactions"""
+    docs = await db.payment_transactions.find({}, {"_id": 0}).sort("created_date", -1).to_list(100)
+    return docs
+
+@api_router.get("/payments/reinvestment")
+async def get_reinvestment():
+    """Get reinvestment vault status"""
+    reinvest_entries = await db.vault_entries.find(
+        {"entry_type": "reinvestment"}, {"_id": 0}
+    ).to_list(100)
+    total = sum(e["amount"] for e in reinvest_entries)
+    reinvestment_vault["balance"] = total
+    reinvestment_vault["total_collected"] = total
+    return {
+        **reinvestment_vault,
+        "entries": reinvest_entries,
+        "credit_alert_threshold": 50,
+    }
+
+@api_router.get("/payments/packages")
+async def list_packages():
+    """Get available payment packages"""
+    return PAYMENT_PACKAGES
 
 # ── API ROUTES: DASHBOARD AGGREGATE ───────────────────────────────────────────
 

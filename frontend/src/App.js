@@ -11,6 +11,7 @@ import Rover from "@/pages/Rover";
 import CapitalColony from "@/pages/CapitalColony";
 import LegalColony from "@/pages/LegalColony";
 import PartnerView from "@/pages/PartnerView";
+import PaymentSuccess from "@/pages/PaymentSuccess";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/capital-colony" element={<CapitalColony />} />
           <Route path="/legal-colony" element={<LegalColony />} />
           <Route path="/partner-view" element={<PartnerView />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Routes>
         <footer
           className="mt-16 py-5 text-center text-[10px] tracking-widest uppercase"

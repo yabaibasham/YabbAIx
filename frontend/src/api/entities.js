@@ -113,3 +113,34 @@ export async function triggerWatchdog() {
   const res = await axios.post(`${API}/watchdog/check`);
   return res.data;
 }
+
+// Stripe Payments
+export async function createCheckout(packageId, leadId) {
+  const originUrl = window.location.origin;
+  const res = await axios.post(`${API}/payments/checkout`, {
+    package_id: packageId,
+    lead_id: leadId || "",
+    origin_url: originUrl,
+  });
+  return res.data;
+}
+
+export async function getPaymentStatus(sessionId) {
+  const res = await axios.get(`${API}/payments/status/${sessionId}`);
+  return res.data;
+}
+
+export async function getPaymentHistory() {
+  const res = await axios.get(`${API}/payments/history`);
+  return res.data;
+}
+
+export async function getReinvestment() {
+  const res = await axios.get(`${API}/payments/reinvestment`);
+  return res.data;
+}
+
+export async function getPaymentPackages() {
+  const res = await axios.get(`${API}/payments/packages`);
+  return res.data;
+}
