@@ -1,76 +1,68 @@
-# YABAI Gold-Hunter PRD
+# YABBAI v5 PRD — Gold-Hunter + Solana DeFi Ecosystem
 
 ## Original Problem Statement
-Upgrade the YABAI application (autonomous agentic system for Melbourne law firm lead generation) with a "Gold-Mining" layer for 24/7 autonomous income generation. Add: 3-agent swarm (Sentinel/Scraper/Janitor), blockchain integration (Base L2/Sui), autonomous vault for yield tracking, swarm management, and Sovereign Vault Treasury with tiered profit distribution.
+Build YABBAI v5 as an autonomous multi-token Solana DeFi ecosystem layered on top of existing YABAI Gold-Hunter. Features: 5 interconnected tokens, mission operator with $0 capital background strategies, Grok xAI agent, pump scanner, yield tracking, treasury, autonomous income generation.
 
 ## Architecture
 - **Stack**: React (frontend) + FastAPI (backend) + MongoDB
-- **LLM Integration**: Emergent Universal Key → GPT-5.2 (Sentinel), Gemini 3 Flash (Scraper), Claude Sonnet (Janitor)
-- **Blockchain**: Base L2 (Chain ID 8453) + Sui (Mainnet) — scaffolded
-- **Agents**: 3 background workers managed by FastAPI BackgroundTasks
-- **Treasury**: Tiered 30/5/95 profit distribution with circuit breaker
-- **Watchdog**: 60s self-healing health checks
+- **LLM**: Emergent Universal Key (GPT-5.2, Gemini Flash, Claude) + xAI Grok (when credits available)
+- **Blockchain**: Base L2 + Sui (Gold-Hunter) + Solana (YABBAI v5)
+- **Payments**: Stripe (95/5 revenue split)
+- **Treasury**: 2 Solana wallets + Sovereign Vault (30/5/95 distribution)
 
-## User Personas
-1. **Thomas Basham** (Owner) — Melbourne-based, scaling autonomous income via AI agents
-2. **Partner/Investor** — VIP access via Partner View (key: BASHAM2026)
-3. **Law Firm Leads** — Melbourne firms targeted for $97 audits → $1,500 retainers
+## Token Ecosystem
+1. $YABBAI — Main Hub
+2. $BASH — Terminal/CTF
+3. $YABBIE — Ocean Scout
+4. $HOMEGROWN — AU Community
+5. $GREENHOUSEGROW — Garden/Community
 
-## Core Requirements (Static)
-- [x] Gold-Hunter swarm with 3 specialized agents
-- [x] Signal entity extended with estimated_profit, execution_link, discovery_source
-- [x] Non-blocking GoldHunter loop (every 5 minutes)
-- [x] Scout logic for on-chain (Base/Sui) and off-chain (web) opportunities
-- [x] Autonomous Vault for 24/7 income tracking
-- [x] Sovereign Vault Treasury with 30/5/95 tiered distribution
-- [x] Self-healing watchdog with autonomous maintenance
-- [x] RULES.md frozen logic governance
-- [x] CHANGELOG.md version tracking
-- [x] Circuit breaker safety (2 failed withdrawals = pause)
-- [x] Gas reserve constraints (0.01 ETH Base, 5 SUI)
+## What's Been Implemented
+### YABBAI v5 DeFi Layer (2026-01-18)
+- 7 new pages: Landing, Command Centre, Missions, Pump Scanner, Agent, Yield, Treasury
+- Mission creator with APY formula (risk*8+200 to risk*15+400)
+- 4 background $0 capital strategies with live ticking YABBAI Reward Tokens
+- Grok xAI agent (falls back to GPT-5.2 when xAI has no credits)
+- 6-factor pump scanner with Jupiter swap links
+- Yield dashboard with strategy breakdown
+- Treasury page with 2 Solana wallet addresses (Holding + Transacting)
+- Early access form
+- Cyberpunk design (#050808, Cyan #00F0FF, Purple #6B2FFF, Gold #F7B731, Orbitron font)
 
-## What's Been Implemented (2026-01-18)
-### Backend (FastAPI + MongoDB)
-- 30+ API endpoints (all tested, passing)
-- Stripe Checkout integration: $97 audit + $1,500 retainer packages
-- 95/5 Revenue Split: Auto-routes 95% to owner, 5% to Reinvestment Vault
-- Payment transaction tracking (payment_transactions collection)
-- Entity models: Signal, Lead, DigitalAsset, Timeline, GoldFinding, VaultEntry
-- Gold-Hunter workers: sentinel_cycle (GPT-5.2), scraper_cycle (Gemini Flash), janitor_cycle (Claude Sonnet)
-- Treasury: tiered 30/5/95 distribution, circuit breaker, hard gas floor (0.005 ETH)
-- Telegram notification engine (scaffolded): Profit Realized, Circuit Breaker, Gas Floor, Payment alerts
-- Watchdog: 60s health checks, auto-restart, config monitoring
-- Stripe webhook handler for payment events
+### Gold-Hunter Layer (preserved)
+- 3-agent swarm (Sentinel/Scraper/Janitor)
+- Sovereign Vault Treasury (30/5/95 tiered distribution)
+- Telegram notification engine (scaffolded)
+- Self-healing watchdog (60s cycles)
+- Stripe payments with 95/5 revenue split
+- Melbourne law firm pipeline (14 firms)
+- RULES.md governance + CHANGELOG.md
 
-### Frontend (React + Tailwind)
-- 10 pages: Dashboard, Gold Hunter, Treasury, Control Room, Strike Deck, Rover, Capital Colony, Legal Colony, Partner View, Payment Success
-- Control Room: Stripe payment buttons ($97 Audit, $1,500 Retainer) on lead cards
-- Payment Success: Polling status, 95/5 split display
-- Treasury Safety: AUD Cashout Flow guide, PayID tip, gas floor override
-- Dark theme (#080808) with gold accents (#FFB800)
+### All Tests Passing
+- Backend: 16/16 (100%)
+- Frontend: All pages working (100%)
 
-### Governance
-- RULES.md: Sovereign rules with 95/5 split, gas floor, bank safety
-- CHANGELOG.md: v1.0 → v2.0 → v2.1 → v2.2 → v2.3
+## MOCKED Components
+- Pump scanner: Simulated token data
+- Yield tokens: Simulated projections at ~$0.001 each
+- xAI Grok: Falls back to GPT-5.2 via Emergent (xAI key needs credits)
+- Withdrawal execution: Scaffolded (mock tx_hash)
+- Gas balance queries: Scaffolded
 
 ## Prioritized Backlog
-### P0 (Critical — Next)
-- [ ] User provides WITHDRAWAL_DESTINATION address → enable live withdrawals
-- [ ] Wire OpenClaw wallet-manager skill for real on-chain transfers
+### P0
+- [ ] Fund xAI account for native Grok agent
+- [ ] Get real Supabase URL (current: MongoDB — working)
+- [ ] Set WITHDRAWAL_DESTINATION for treasury cashout
+- [ ] Phantom wallet connection (packages installed, UI scaffolding needed)
 
-### P1 (High — Near-term)
-- [ ] Real blockchain RPC integration (Base/Sui balance queries)
-- [ ] Telegram notification integration for treasury events
-- [ ] Fixer agent for autonomous error resolution
+### P1
+- [ ] Real Solana RPC integration for token balances
+- [ ] Live Jupiter API integration for real-time pump scanner data
+- [ ] Telegram bot setup (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID)
+- [ ] Send 14 Melbourne law firm emails
 
-### P2 (Medium — Scaling)
-- [ ] Multi-chain dust recovery automation
-- [ ] AI-powered lead scoring from Signal entity
-- [ ] Email sending integration (SendGrid/Resend) for Control Room
-- [ ] Real-time WebSocket updates for swarm status
-
-## Next Tasks
-1. Configure WITHDRAWAL_DESTINATION with Coinspot/Coinbase deposit address
-2. Integrate OpenClaw wallet-manager for real Base L2 transfers
-3. Add Telegram bot notifications for treasury distributions
-4. Build real blockchain balance queries (replace scaffolded gas reserve check)
+### P2
+- [ ] Actual on-chain token minting for YABBAI Reward Tokens
+- [ ] Cross-chain bridge logic (Base ↔ Solana)
+- [ ] Multi-wallet portfolio tracking
