@@ -1478,11 +1478,288 @@ async def dashboard_data():
 
 @api_router.get("/")
 async def root():
-    return {"message": "YABAI Gold-Hunter API", "version": "2.0", "status": "operational"}
+    return {"message": "YABBAI v5 Gold-Hunter + DeFi API", "version": "5.0", "status": "operational"}
 
 @api_router.get("/health")
 async def health():
     return {"status": "healthy", "swarm_running": swarm_running}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# YABBAI v5 — SOLANA DEFI ECOSYSTEM
+# ══════════════════════════════════════════════════════════════════════════════
+
+YABBAI_TOKENS = {
+    "YABBAI": {"name": "$YABBAI", "role": "Main Hub", "color": "#00F0FF"},
+    "BASH": {"name": "$BASH", "role": "Terminal/CTF", "color": "#6B2FFF"},
+    "YABBIE": {"name": "$YABBIE", "role": "Ocean Scout", "color": "#00D4AA"},
+    "HOMEGROWN": {"name": "$HOMEGROWN", "role": "AU Community", "color": "#F7B731"},
+    "GREENHOUSEGROW": {"name": "$GREENHOUSEGROW", "role": "Garden/Community", "color": "#22C55E"},
+}
+
+TREASURY_WALLETS = {
+    "holding": {"address": os.environ.get("TREASURY_HOLDING_WALLET", ""), "label": "Secure Holding Wallet"},
+    "transacting": {"address": os.environ.get("TREASURY_TRANSACTING_WALLET", ""), "label": "Transacting Wallet"},
+}
+
+BACKGROUND_STRATEGIES = [
+    {"id": "testnet", "name": "Testnet & Incentivized Network Farming", "base_apy": 12.5, "reward_rate": 0.0042},
+    {"id": "perp_dex", "name": "Perp DEX / DEX Points Farming", "base_apy": 8.2, "reward_rate": 0.0028},
+    {"id": "prediction", "name": "Prediction Market Participation", "base_apy": 15.0, "reward_rate": 0.0051},
+    {"id": "stablecoin", "name": "Passive Stablecoin Wrappers + Cross-Chain Quests", "base_apy": 6.5, "reward_rate": 0.0022},
+]
+
+# ── YABBAI: EARLY ACCESS ──────────────────────────────────────────────────────
+
+class EarlyAccessLead(BaseModel):
+    email: str
+    wallet_address: str = ""
+    referral_source: str = ""
+
+@api_router.post("/yabbai/early-access")
+async def submit_early_access(data: EarlyAccessLead):
+    doc = {"id": str(uuid.uuid4()), "email": data.email, "wallet_address": data.wallet_address, "referral_source": data.referral_source, "created_date": datetime.now(timezone.utc).isoformat()}
+    await db.early_access_leads.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+# ── YABBAI: MISSIONS ──────────────────────────────────────────────────────────
+
+class MissionCreate(BaseModel):
+    name: str
+    risk_level: int = 5
+    deposit_amount: float = 0
+    wallet_address: str = ""
+    token: str = "YABBAI"
+
+@api_router.post("/yabbai/missions")
+async def create_mission(data: MissionCreate):
+    risk = max(1, min(10, data.risk_level))
+    apy_low = risk * 8 + 200
+    apy_high = risk * 15 + 400
+    now = datetime.now(timezone.utc).isoformat()
+    mission = {
+        "id": str(uuid.uuid4()),
+        "name": data.name,
+        "risk_level": risk,
+        "deposit_amount": data.deposit_amount,
+        "wallet_address": data.wallet_address,
+        "token": data.token,
+        "apy_range": f"{apy_low}%-{apy_high}%",
+        "apy_low": apy_low,
+        "apy_high": apy_high,
+        "status": "active",
+        "total_yield": 0.0,
+        "reward_tokens": 0.0,
+        "strategies": {s["id"]: {"name": s["name"], "tokens_earned": 0.0, "last_tick": now} for s in BACKGROUND_STRATEGIES},
+        "created_date": now,
+        "updated_date": now,
+    }
+    await db.missions.insert_one(mission)
+    mission.pop("_id", None)
+    return mission
+
+@api_router.get("/yabbai/missions")
+async def list_missions(wallet: str = ""):
+    query = {"wallet_address": wallet} if wallet else {}
+    docs = await db.missions.find(query, {"_id": 0}).sort("created_date", -1).to_list(100)
+    return docs
+
+@api_router.get("/yabbai/missions/{mission_id}")
+async def get_mission(mission_id: str):
+    doc = await db.missions.find_one({"id": mission_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Mission not found")
+    return doc
+
+@api_router.post("/yabbai/missions/{mission_id}/tick")
+async def tick_mission_yields(mission_id: str):
+    """Tick all background strategy yields for a mission"""
+    doc = await db.missions.find_one({"id": mission_id}, {"_id": 0})
+    if not doc or doc.get("status") != "active":
+        raise HTTPException(404, "Active mission not found")
+
+    now = datetime.now(timezone.utc).isoformat()
+    strategies = doc.get("strategies", {})
+    total_new = 0.0
+
+    for sid, strat in strategies.items():
+        meta = next((s for s in BACKGROUND_STRATEGIES if s["id"] == sid), None)
+        if not meta:
+            continue
+        # Calculate tokens earned since last tick
+        try:
+            last = datetime.fromisoformat(strat["last_tick"])
+            elapsed = (datetime.now(timezone.utc) - last).total_seconds()
+        except Exception:
+            elapsed = 60
+        new_tokens = meta["reward_rate"] * (elapsed / 60.0)
+        strat["tokens_earned"] = strat.get("tokens_earned", 0) + new_tokens
+        strat["last_tick"] = now
+        total_new += new_tokens
+
+    total_reward = doc.get("reward_tokens", 0) + total_new
+    await db.missions.update_one(
+        {"id": mission_id},
+        {"$set": {"strategies": strategies, "reward_tokens": total_reward, "updated_date": now}},
+    )
+    return {"mission_id": mission_id, "new_tokens": total_new, "total_reward_tokens": total_reward}
+
+# ── YABBAI: USER BALANCES ─────────────────────────────────────────────────────
+
+@api_router.get("/yabbai/balance/{wallet}")
+async def get_balance(wallet: str):
+    doc = await db.user_balances.find_one({"wallet": wallet}, {"_id": 0})
+    if not doc:
+        return {"wallet": wallet, "balance": 0.0, "reward_tokens": 0.0, "deposits": []}
+    return doc
+
+@api_router.post("/yabbai/deposit")
+async def record_deposit(wallet: str = "", amount: float = 0, tx_hash: str = ""):
+    if amount < 20:
+        raise HTTPException(400, "Minimum deposit is $20")
+    now = datetime.now(timezone.utc).isoformat()
+    existing = await db.user_balances.find_one({"wallet": wallet}, {"_id": 0})
+    if existing:
+        new_bal = existing.get("balance", 0) + amount
+        deposits = existing.get("deposits", [])
+        deposits.append({"amount": amount, "tx_hash": tx_hash, "date": now})
+        await db.user_balances.update_one({"wallet": wallet}, {"$set": {"balance": new_bal, "deposits": deposits}})
+    else:
+        await db.user_balances.insert_one({"id": str(uuid.uuid4()), "wallet": wallet, "balance": amount, "reward_tokens": 0.0, "deposits": [{"amount": amount, "tx_hash": tx_hash, "date": now}]})
+    updated = await db.user_balances.find_one({"wallet": wallet}, {"_id": 0})
+    return updated
+
+# ── YABBAI: GROK xAI AGENT ───────────────────────────────────────────────────
+
+class AgentMessage(BaseModel):
+    message: str
+    wallet_address: str = ""
+    model: str = "grok-3"
+
+@api_router.post("/yabbai/agent/chat")
+async def agent_chat(data: AgentMessage):
+    xai_key = os.environ.get("XAI_API_KEY", "")
+    if not xai_key:
+        raise HTTPException(500, "xAI API key not configured")
+
+    now = datetime.now(timezone.utc).isoformat()
+    # Get conversation history
+    history = await db.agent_messages.find(
+        {"wallet_address": data.wallet_address}, {"_id": 0}
+    ).sort("created_date", -1).limit(10).to_list(10)
+    history.reverse()
+
+    messages = [{"role": "system", "content": "You are YABBAI Agent, an autonomous DeFi mission operator for the Solana ecosystem. You help users manage their $YABBAI, $BASH, $YABBIE, $HOMEGROWN, and $GREENHOUSEGROW tokens. You provide insights on yield strategies, mission management, and the YABBAI ecosystem. Be concise, cyberpunk-themed, and helpful. Use technical but accessible language."}]
+    for h in history:
+        messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
+    messages.append({"role": "user", "content": data.message})
+
+    # Map friendly names to API model IDs
+    model_map = {"grok-3": "grok-3-beta", "grok-3-mini": "grok-3-mini-beta", "grok-4": "grok-4"}
+    api_model = model_map.get(data.model, data.model)
+
+    try:
+        # Try xAI direct first
+        xai_key = os.environ.get("XAI_API_KEY", "")
+        if xai_key:
+            import httpx
+            async with httpx.AsyncClient(timeout=30) as http_client:
+                resp = await http_client.post(
+                    "https://api.x.ai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {xai_key}", "Content-Type": "application/json"},
+                    json={"model": api_model, "messages": messages, "temperature": 0.7, "max_tokens": 1000},
+                )
+                result = resp.json()
+                if "error" in result or "code" in result:
+                    raise Exception(result.get("error", result.get("code", "xAI error")))
+                reply = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+                if reply:
+                    pass  # Success via xAI
+                else:
+                    raise Exception("Empty xAI response")
+        else:
+            raise Exception("No xAI key")
+    except Exception as xai_err:
+        logger.info(f"xAI unavailable ({xai_err}), falling back to Emergent LLM")
+        # Fallback to Emergent Universal Key (GPT-5.2)
+        try:
+            reply = await llm_infer(
+                messages[0]["content"],
+                data.message,
+                "openai",
+                "gpt-5.2",
+            )
+        except Exception as e2:
+            reply = f"Agent connection error. Both xAI and fallback failed."
+
+    # Save both messages
+    user_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "user", "content": data.message, "model": data.model, "created_date": now}
+    await db.agent_messages.insert_one(user_doc)
+    user_doc.pop("_id", None)
+
+    assistant_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "assistant", "content": reply, "model": data.model, "created_date": now}
+    await db.agent_messages.insert_one(assistant_doc)
+    assistant_doc.pop("_id", None)
+
+    return {"reply": reply, "model": data.model}
+
+@api_router.get("/yabbai/agent/history")
+async def agent_history(wallet: str = ""):
+    query = {"wallet_address": wallet} if wallet else {}
+    docs = await db.agent_messages.find(query, {"_id": 0}).sort("created_date", -1).limit(50).to_list(50)
+    docs.reverse()
+    return docs
+
+# ── YABBAI: PUMP SCANNER ─────────────────────────────────────────────────────
+
+@api_router.get("/yabbai/pump-scanner")
+async def pump_scanner():
+    """6-factor pump scoring with Jupiter swap links"""
+    # Simulated scanner data — in production would pull from Solana RPC / Jupiter API
+    tokens = [
+        {"symbol": "YABBAI", "name": "YABBAI Hub", "score": 87, "volume_24h": 125000, "holders": 2400, "liquidity": 89000, "momentum": "UP", "risk": "LOW", "jupiter_link": "https://jup.ag/swap/SOL-YABBAI"},
+        {"symbol": "BASH", "name": "BASH Terminal", "score": 74, "volume_24h": 68000, "holders": 1200, "liquidity": 45000, "momentum": "UP", "risk": "MED", "jupiter_link": "https://jup.ag/swap/SOL-BASH"},
+        {"symbol": "YABBIE", "name": "Yabbie Scout", "score": 69, "volume_24h": 42000, "holders": 890, "liquidity": 32000, "momentum": "FLAT", "risk": "MED", "jupiter_link": "https://jup.ag/swap/SOL-YABBIE"},
+        {"symbol": "HOMEGROWN", "name": "Homegrown AU", "score": 82, "volume_24h": 95000, "holders": 1800, "liquidity": 67000, "momentum": "UP", "risk": "LOW", "jupiter_link": "https://jup.ag/swap/SOL-HOMEGROWN"},
+        {"symbol": "GREENHOUSEGROW", "name": "Greenhouse Grow", "score": 71, "volume_24h": 51000, "holders": 950, "liquidity": 38000, "momentum": "UP", "risk": "MED", "jupiter_link": "https://jup.ag/swap/SOL-GREENHOUSEGROW"},
+    ]
+    return {"tokens": tokens, "last_scan": datetime.now(timezone.utc).isoformat()}
+
+# ── YABBAI: TREASURY INFO ─────────────────────────────────────────────────────
+
+@api_router.get("/yabbai/treasury")
+async def yabbai_treasury():
+    return {
+        "wallets": TREASURY_WALLETS,
+        "tokens": YABBAI_TOKENS,
+        "strategies": BACKGROUND_STRATEGIES,
+        "ecosystem_stats": {
+            "total_missions": await db.missions.count_documents({}),
+            "active_missions": await db.missions.count_documents({"status": "active"}),
+            "total_users": await db.user_balances.count_documents({}),
+            "total_early_access": await db.early_access_leads.count_documents({}),
+        },
+    }
+
+# ── YABBAI: YIELD SUMMARY ────────────────────────────────────────────────────
+
+@api_router.get("/yabbai/yield-summary")
+async def yield_summary(wallet: str = ""):
+    query = {"wallet_address": wallet} if wallet else {}
+    missions = await db.missions.find(query, {"_id": 0}).to_list(100)
+    total_reward = sum(m.get("reward_tokens", 0) for m in missions)
+    total_deposit = sum(m.get("deposit_amount", 0) for m in missions)
+    by_strategy = {}
+    for m in missions:
+        for sid, strat in m.get("strategies", {}).items():
+            by_strategy[sid] = by_strategy.get(sid, 0) + strat.get("tokens_earned", 0)
+    return {
+        "total_reward_tokens": total_reward,
+        "reward_token_value_usd": total_reward * 0.001,
+        "total_deposited": total_deposit,
+        "missions_count": len(missions),
+        "by_strategy": by_strategy,
+    }
 
 # ── APP SETUP ──────────────────────────────────────────────────────────────────
 
