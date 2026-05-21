@@ -1634,54 +1634,99 @@ async def record_deposit(wallet: str = "", amount: float = 0, tx_hash: str = "")
 class AgentMessage(BaseModel):
     message: str
     wallet_address: str = ""
-    model: str = "grok-3"
+    model: str = "gpt-5.2"
+
+# NVIDIA NIM model configs: model_id -> (env_key, nvidia_model_name)
+NVIDIA_MODELS = {
+    "nemotron": ("NEMOTRON_NVIDIA_API_KEY", "nvidia/llama-3.3-nemotron-super-49b-v1"),
+    "mistral": ("MISTRAL_NVIDIA_API_KEY", "mistralai/mistral-medium-3-instruct"),
+    "deepseek": ("DEEPSEEK_PRO_API_KEY", "deepseek-ai/deepseek-r1"),
+    "moonshot": ("MOONSHOT_API_KEY", "moonshotai/kimi-k2-instruct"),
+    "gemma": ("GEMMA_NVIDIA_API_KEY", "google/gemma-3-27b-it"),
+    "glm": ("GLM_NVIDIA_API_KEY", "THUDM/glm-4-32b-instruct"),
+}
+
+async def nvidia_infer(system_prompt: str, user_prompt: str, model_id: str) -> str:
+    """Call NVIDIA NIM API for a given model"""
+    env_key, nvidia_model = NVIDIA_MODELS.get(model_id, (None, None))
+    if not env_key:
+        raise Exception(f"Unknown NVIDIA model: {model_id}")
+    api_key = os.environ.get(env_key, "")
+    if not api_key:
+        raise Exception(f"{env_key} not configured")
+    try:
+        import httpx
+        async with httpx.AsyncClient(timeout=60) as http_client:
+            resp = await http_client.post(
+                "https://integrate.api.nvidia.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json={
+                    "model": nvidia_model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 1024,
+                },
+            )
+            result = resp.json()
+            if "error" in result:
+                raise Exception(str(result["error"]))
+            return result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    except Exception as e:
+        logger.error(f"NVIDIA {model_id} error: {e}")
+        raise
 
 @api_router.post("/yabbai/agent/chat")
 async def agent_chat(data: AgentMessage):
-    xai_key = os.environ.get("XAI_API_KEY", "")
-    if not xai_key:
-        raise HTTPException(500, "xAI API key not configured")
-
     now = datetime.now(timezone.utc).isoformat()
-    # Get conversation history
     history = await db.agent_messages.find(
         {"wallet_address": data.wallet_address}, {"_id": 0}
     ).sort("created_date", -1).limit(10).to_list(10)
     history.reverse()
 
-    messages = [{"role": "system", "content": "You are YABBAI Agent, an autonomous DeFi mission operator for the Solana ecosystem. You help users manage their $YABBAI, $BASH, $YABBIE, $HOMEGROWN, and $GREENHOUSEGROW tokens. You provide insights on yield strategies, mission management, and the YABBAI ecosystem. Be concise, cyberpunk-themed, and helpful. Use technical but accessible language."}]
+    system_prompt = "You are YABBAI Agent, an autonomous DeFi mission operator for the Solana ecosystem. You help users manage their $YABBAI, $BASH, $YABBIE, $HOMEGROWN, and $GREENHOUSEGROW tokens. You provide insights on yield strategies, mission management, and the YABBAI ecosystem. Be concise, cyberpunk-themed, and helpful. Use technical but accessible language."
+    messages = [{"role": "system", "content": system_prompt}]
     for h in history:
         messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
     messages.append({"role": "user", "content": data.message})
 
-    # Map friendly names to API model IDs
-    model_map = {"grok-3": "grok-3-beta", "grok-3-mini": "grok-3-mini-beta", "grok-4": "grok-4"}
-    api_model = model_map.get(data.model, data.model)
+    reply = None
+    model_used = data.model
 
-    reply = None  # Initialize to avoid undefined variable on edge paths
+    # Route to correct provider based on model selection
+    if data.model in NVIDIA_MODELS:
+        # NVIDIA NIM models
+        try:
+            reply = await nvidia_infer(system_prompt, data.message, data.model)
+            model_used = NVIDIA_MODELS[data.model][1]
+        except Exception as e:
+            logger.warning(f"NVIDIA {data.model} failed ({e}), falling back to Emergent")
+            reply = None
 
-    # Use Emergent Universal Key directly (GPT-5.2)
-    try:
-        reply = await llm_infer(
-            messages[0]["content"],
-            data.message,
-            "openai",
-            "gpt-5.2",
-        )
-    except Exception as e:
-        logger.error(f"Agent LLM error: {e}")
-        reply = "Agent temporarily unavailable. Please try again."
+    if reply is None:
+        # Default / fallback: Emergent Universal Key (GPT-5.2)
+        try:
+            reply = await llm_infer(system_prompt, data.message, "openai", "gpt-5.2")
+            if data.model in NVIDIA_MODELS:
+                model_used = f"gpt-5.2 (fallback from {data.model})"
+            else:
+                model_used = "gpt-5.2"
+        except Exception as e:
+            logger.error(f"Agent LLM error: {e}")
+            reply = "Agent temporarily unavailable. Please try again."
 
     # Save both messages
     user_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "user", "content": data.message, "model": data.model, "created_date": now}
     await db.agent_messages.insert_one(user_doc)
     user_doc.pop("_id", None)
 
-    assistant_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "assistant", "content": reply, "model": data.model, "created_date": now}
+    assistant_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "assistant", "content": reply, "model": model_used, "created_date": now}
     await db.agent_messages.insert_one(assistant_doc)
     assistant_doc.pop("_id", None)
 
-    return {"reply": reply, "model": data.model}
+    return {"reply": reply, "model": model_used}
 
 @api_router.get("/yabbai/agent/history")
 async def agent_history(wallet: str = ""):

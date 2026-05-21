@@ -42,8 +42,17 @@ export default function YabbaiAgent() {
         <select data-testid="model-select" value={model} onChange={(e) => setModel(e.target.value)}
           className="text-[11px] font-mono px-3 py-1.5 rounded-sm focus:outline-none"
           style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(247,183,49,0.2)", color: "#F7B731" }}>
-          <option value="grok-3">Grok 3</option>
-          <option value="grok-3-mini">Grok 3 Mini</option>
+          <optgroup label="Emergent">
+            <option value="gpt-5.2">GPT-5.2</option>
+          </optgroup>
+          <optgroup label="NVIDIA NIM">
+            <option value="nemotron">Nemotron Super 49B</option>
+            <option value="mistral">Mistral Medium 3</option>
+            <option value="deepseek">DeepSeek R1</option>
+            <option value="moonshot">Kimi K2</option>
+            <option value="gemma">Gemma 3 27B</option>
+            <option value="glm">GLM-4 32B</option>
+          </optgroup>
         </select>
       </div>
 
