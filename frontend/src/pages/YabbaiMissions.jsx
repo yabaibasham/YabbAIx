@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import { Target, Zap, Play, RefreshCw } from "lucide-react";
+import logger from "@/utils/logger";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const STRATEGIES = [
@@ -22,7 +23,7 @@ export default function YabbaiMissions() {
     try {
       const res = await axios.get(`${API}/yabbai/missions`);
       setMissions(Array.isArray(res.data) ? res.data : []);
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("Mission load failed", e); }
     finally { setLoading(false); }
   }, []);
 
@@ -33,7 +34,7 @@ export default function YabbaiMissions() {
     tickRef.current = setInterval(async () => {
       for (const m of missions) {
         if (m.status === "active") {
-          try { await axios.post(`${API}/yabbai/missions/${m.id}/tick`); } catch (err) { console.error(`Tick failed for mission ${m.id}:`, err); }
+          try { await axios.post(`${API}/yabbai/missions/${m.id}/tick`); } catch (err) { logger.error(`Tick failed for mission ${m.id}`, err); }
         }
       }
       load();
@@ -47,7 +48,7 @@ export default function YabbaiMissions() {
       await axios.post(`${API}/yabbai/missions`, { name, risk_level: risk, deposit_amount: 0, token: "YABBAI" });
       load();
       setName("Alpha Mission");
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("Mission create failed", e); }
     finally { setCreating(false); }
   };
 

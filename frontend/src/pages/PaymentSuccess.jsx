@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getPaymentStatus } from "@/api/entities";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useSearchParams, NavLink } from "react-router-dom";
+import logger from "@/utils/logger";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -22,7 +23,7 @@ export default function PaymentSuccess() {
           setAttempts((a) => a + 1);
         }
       } catch (e) {
-        console.warn(e);
+        logger.warn("Payment status check failed", e);
         if (attempts >= 5) setPolling(false);
         setAttempts((a) => a + 1);
       }

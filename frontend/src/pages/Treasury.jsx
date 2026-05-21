@@ -8,6 +8,7 @@ import {
   RefreshCw, ArrowDownToLine, AlertTriangle, Heart, Activity,
   Bell, Fuel, CreditCard
 } from "lucide-react";
+import logger from "@/utils/logger";
 
 export default function Treasury() {
   const [treasury, setTreasury] = useState(null);
@@ -26,7 +27,7 @@ export default function Treasury() {
       setTreasury(t);
       setHistory(Array.isArray(h) ? h : []);
       setWatchdog(w);
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("Treasury load failed", e); }
     finally { setLoading(false); }
   }, []);
 

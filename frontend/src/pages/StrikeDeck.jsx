@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Lead, Signal } from "@/api/entities";
+import logger from "@/utils/logger";
 
 const STATUSES = ["Discovered", "Email Drafted", "Sent", "Opened", "Replied", "Closed", "Dead"];
 const SENTIMENTS = ["Positive", "Negative", "Objection-HasTool", "Objection-Budget", "Objection-Timing", "Neutral"];
@@ -25,7 +26,7 @@ export default function StrikeDeck() {
       const [l, s] = await Promise.all([Lead.list(), Signal.list()]);
       setLeads(Array.isArray(l) ? l : []);
       setSignals(Array.isArray(s) ? s : []);
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("StrikeDeck load failed", e); }
     finally { setLoading(false); }
   }, []);
 
@@ -60,7 +61,7 @@ export default function StrikeDeck() {
       }
       load();
       setSelected(null);
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("StrikeDeck save failed", e); }
     finally { setSaving(false); }
   };
 

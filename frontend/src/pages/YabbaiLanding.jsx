@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Zap, Shield, Globe, ArrowRight, Cpu } from "lucide-react";
 import axios from "axios";
+import logger from "@/utils/logger";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -17,7 +18,7 @@ export default function YabbaiLanding() {
       await axios.post(`${API}/yabbai/early-access`, { email, wallet_address: wallet });
       setSubmitted(true);
     } catch (err) {
-      console.error("Early access submission failed:", err);
+      logger.error("Early access submission failed", err);
     }
   };
 

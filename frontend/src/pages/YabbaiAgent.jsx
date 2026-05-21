@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { MessageSquare, Send, Bot } from "lucide-react";
+import logger from "@/utils/logger";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -12,7 +13,7 @@ export default function YabbaiAgent() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    axios.get(`${API}/yabbai/agent/history`).then((r) => setMessages(r.data || [])).catch((err) => { console.error("Failed to load agent history:", err); });
+    axios.get(`${API}/yabbai/agent/history`).then((r) => setMessages(r.data || [])).catch((err) => { logger.error("Failed to load agent history", err); });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps -- API constant, only run on mount
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);

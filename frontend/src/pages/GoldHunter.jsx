@@ -39,7 +39,7 @@ export default function GoldHunter() {
       setSwarm(s);
       setFindings(Array.isArray(f) ? f : []);
       setVault(v);
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("GoldHunter load failed", e); }
     finally { setLoading(false); }
   }, []);
 

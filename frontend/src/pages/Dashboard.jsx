@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { getDashboardData } from "@/api/entities";
 import { NavLink } from "react-router-dom";
 import { TrendingUp, Layers, Zap, ArrowUpRight, ChevronDown } from "lucide-react";
+import logger from "@/utils/logger";
 
 const STATUS_STYLES = {
   Seed: { bg: "rgba(251,191,36,0.1)", text: "#fbbf24", dot: "#fbbf24" },
@@ -25,7 +26,7 @@ export default function Dashboard() {
       const d = await getDashboardData();
       setData(d);
     } catch (e) {
-      console.warn("Dashboard load error:", e);
+      logger.warn("Dashboard load failed", e);
     } finally {
       setLoading(false);
     }

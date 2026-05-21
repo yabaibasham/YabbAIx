@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { Zap, Radio, Target, BarChart3, MessageSquare, Wallet, ArrowRight } from "lucide-react";
+import logger from "@/utils/logger";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -18,7 +19,7 @@ export default function CommandCentre() {
       ]);
       setData(d.data);
       setYieldData(y.data);
-    } catch (e) { console.warn(e); }
+    } catch (e) { logger.warn("Command Centre load failed", e); }
     finally { setLoading(false); }
   }, []);
 

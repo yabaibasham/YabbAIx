@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DigitalAsset } from "@/api/entities";
 import { Building2, ArrowRight, Check } from "lucide-react";
+import logger from "@/utils/logger";
 
 export default function CapitalColony() {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ export default function CapitalColony() {
     try {
       await DigitalAsset.create({ asset_type: "Email Capture", title: `Lead: ${email}`, content: email, status: "Live", signal_at_creation: 92, niche: "legal-tech", mrr_estimate: "$50,000-$200,000/mo", email_captures: 1 });
     } catch (err) {
-      console.error("Waitlist submission failed:", err);
+      logger.error("Waitlist submission failed", err);
     }
     setSubmitted(true);
     setLoading(false);

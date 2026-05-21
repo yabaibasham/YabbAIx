@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Lead, createCheckout } from "@/api/entities";
 import { Copy, Check, Trash2, Send, MessageSquare, Download, CreditCard } from "lucide-react";
+import logger from "@/utils/logger";
 
 const LAW_AUDITS = {
   "blackburn law group": { hours: 15, cost: "$7,200", score: 95, type: "Corporate & M&A", gap: "Due diligence document review is 100% manual", fix: "M&A due diligence AI" },
@@ -54,7 +55,7 @@ export default function ControlRoom() {
 
   const load = useCallback(async () => {
     try { const data = await Lead.list(); setLeads(Array.isArray(data) ? data : []); }
-    catch (e) { console.warn(e); setLeads([]); }
+    catch (e) { logger.warn("Lead load failed", e); setLeads([]); }
     finally { setLoading(false); }
   }, []);
 
@@ -65,7 +66,7 @@ export default function ControlRoom() {
     let added = 0;
     for (const t of STRIKE_TARGETS) {
       if (existing.has(t.business_name.toLowerCase())) continue;
-      try { await Lead.create(t); added++; } catch (e) { console.warn(e); }
+      try { await Lead.create(t); added++; } catch (e) { logger.warn("Lead create failed", e); }
     }
     showToast(`${added} Capital Colony targets loaded`);
     load();
@@ -77,7 +78,7 @@ export default function ControlRoom() {
     for (const lead of undrafted) {
       const { subject, body } = buildEmail(lead);
       try { await Lead.update(lead.id, { email_subject: subject, email_body: body, status: "Email Drafted" }); done++; }
-      catch (e) { console.warn(e); }
+      catch (e) { logger.warn("Email draft failed", e); }
     }
     showToast(`${done} emails drafted`);
     load();
