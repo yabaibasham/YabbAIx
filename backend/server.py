@@ -1660,39 +1660,17 @@ async def agent_chat(data: AgentMessage):
 
     reply = None  # Initialize to avoid undefined variable on edge paths
 
+    # Use Emergent Universal Key directly (GPT-5.2)
     try:
-        # Try xAI direct first
-        xai_key = os.environ.get("XAI_API_KEY", "")
-        if xai_key:
-            import httpx
-            async with httpx.AsyncClient(timeout=30) as http_client:
-                resp = await http_client.post(
-                    "https://api.x.ai/v1/chat/completions",
-                    headers={"Authorization": f"Bearer {xai_key}", "Content-Type": "application/json"},
-                    json={"model": api_model, "messages": messages, "temperature": 0.7, "max_tokens": 1000},
-                )
-                result = resp.json()
-                if "error" in result or "code" in result:
-                    raise Exception(result.get("error", result.get("code", "xAI error")))
-                reply = result.get("choices", [{}])[0].get("message", {}).get("content", "")
-                if reply:
-                    pass  # Success via xAI
-                else:
-                    raise Exception("Empty xAI response")
-        else:
-            raise Exception("No xAI key")
-    except Exception as xai_err:
-        logger.info(f"xAI unavailable ({xai_err}), falling back to Emergent LLM")
-        # Fallback to Emergent Universal Key (GPT-5.2)
-        try:
-            reply = await llm_infer(
-                messages[0]["content"],
-                data.message,
-                "openai",
-                "gpt-5.2",
-            )
-        except Exception:
-            reply = "Agent connection error. Both xAI and fallback failed."
+        reply = await llm_infer(
+            messages[0]["content"],
+            data.message,
+            "openai",
+            "gpt-5.2",
+        )
+    except Exception as e:
+        logger.error(f"Agent LLM error: {e}")
+        reply = "Agent temporarily unavailable. Please try again."
 
     # Save both messages
     user_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "user", "content": data.message, "model": data.model, "created_date": now}
