@@ -43,6 +43,16 @@ export default function StrikeDeck() {
   }, [filtered]);
   const { closed, revenue, sent, replied, replyRate } = pipelineStats;
 
+  const groupedLeads = useMemo(() => {
+    const groups = {};
+    for (const lead of filtered) {
+      const st = lead.status || "Discovered";
+      if (!groups[st]) groups[st] = [];
+      groups[st].push(lead);
+    }
+    return groups;
+  }, [filtered]);
+
   const openLead = (lead) => {
     setSelected(lead);
     setEditData({ status: lead.status, reply_text: lead.reply_text || "", reply_sentiment: lead.reply_sentiment || "", notes: lead.notes || "", revenue: lead.revenue || 1500 });
@@ -103,7 +113,7 @@ export default function StrikeDeck() {
       {tab === "pipeline" && (
         <div className="space-y-4">
           {STATUSES.filter((st) => st !== "Dead").map((status) => {
-            const group = filtered.filter((l) => l.status === status);
+            const group = groupedLeads[status] || [];
             if (group.length === 0) return null;
             return (
               <div key={status}>

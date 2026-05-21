@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Lead, createCheckout } from "@/api/entities";
 import { Copy, Check, Trash2, Send, MessageSquare, Download, CreditCard } from "lucide-react";
 import logger from "@/utils/logger";
@@ -94,9 +94,12 @@ export default function ControlRoom() {
     catch { showToast("Failed", "err"); }
   };
 
-  const scouted = leads.filter((l) => l.status === "Scouted").length;
-  const drafted = leads.filter((l) => l.status === "Email Drafted").length;
-  const revenue = leads.filter((l) => l.status === "Closed").reduce((s, l) => s + (l.revenue || 200), 0);
+  const crStats = useMemo(() => ({
+    scouted: leads.filter((l) => l.status === "Scouted").length,
+    drafted: leads.filter((l) => l.status === "Email Drafted").length,
+    revenue: leads.filter((l) => l.status === "Closed").reduce((s, l) => s + (l.revenue || 200), 0),
+  }), [leads]);
+  const { scouted, drafted, revenue } = crStats;
 
   const targets = leads.filter((l) => getLawAudit(l.business_name)).length > 0
     ? [...leads].filter((l) => getLawAudit(l.business_name)).sort((a, b) => (b.gap_score || 0) - (a.gap_score || 0))

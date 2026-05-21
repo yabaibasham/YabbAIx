@@ -58,6 +58,11 @@ export default function Dashboard() {
   }, [timelines, assets, findings, vault]);
   const { live, avgSig, stats } = dashStats;
 
+  const sortedTimelines = useMemo(() =>
+    timelines.filter((t) => !t.parent_id).sort((a, b) => (b.profit_signal || 0) - (a.profit_signal || 0)),
+    [timelines]
+  );
+
   const toggle = (id) => setExpanded((e) => ({ ...e, [id]: !e[id] }));
 
   if (loading) return (
@@ -130,10 +135,7 @@ export default function Dashboard() {
       {/* Colonies Tab */}
       {tab === "colonies" && (
         <div className="space-y-1.5">
-          {timelines
-            .filter((t) => !t.parent_id)
-            .sort((a, b) => (b.profit_signal || 0) - (a.profit_signal || 0))
-            .map((tl) => {
+          {sortedTimelines.map((tl) => {
               const meta = STATUS_STYLES[tl.status] || STATUS_STYLES.Seed;
               const sig = tl.profit_signal || 0;
               const isGold = tl.tags?.includes("gold-hunter");
