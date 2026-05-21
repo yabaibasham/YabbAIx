@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { BarChart3, ExternalLink, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
@@ -16,6 +16,7 @@ export default function PumpScanner() {
   }, []);
 
   const tokens = data?.tokens || [];
+  const sortedTokens = useMemo(() => [...tokens].sort((a, b) => b.score - a.score), [tokens]);
 
   return (
     <div data-testid="pump-scanner-page" className="max-w-6xl mx-auto px-4 py-6 space-y-5">
@@ -25,7 +26,7 @@ export default function PumpScanner() {
       </div>
 
       <div className="space-y-2">
-        {tokens.sort((a, b) => b.score - a.score).map((t) => {
+        {sortedTokens.map((t) => {
           const MIcon = MOMENTUM_ICON[t.momentum] || Minus;
           return (
             <div key={t.symbol} data-testid={`token-${t.symbol}`}

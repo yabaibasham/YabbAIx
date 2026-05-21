@@ -13,7 +13,9 @@ export default function CapitalColony() {
     setLoading(true);
     try {
       await DigitalAsset.create({ asset_type: "Email Capture", title: `Lead: ${email}`, content: email, status: "Live", signal_at_creation: 92, niche: "legal-tech", mrr_estimate: "$50,000-$200,000/mo", email_captures: 1 });
-    } catch {}
+    } catch (err) {
+      console.error("Waitlist submission failed:", err);
+    }
     setSubmitted(true);
     setLoading(false);
   };

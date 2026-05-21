@@ -70,7 +70,7 @@ export default function PartnerView() {
 
       <div className="space-y-1">
         {FIRMS.map((a, i) => (
-          <div key={i} data-testid={`partner-firm-${i}`} className="rounded-sm overflow-hidden" style={{ background: open === i ? "var(--yb-surface-1)" : "var(--yb-bg)", border: `1px solid ${open === i ? "rgba(255,255,255,0.15)" : "var(--yb-border)"}` }}>
+          <div key={`firm-${a.n}`} data-testid={`partner-firm-${i}`} className="rounded-sm overflow-hidden" style={{ background: open === i ? "var(--yb-surface-1)" : "var(--yb-bg)", border: `1px solid ${open === i ? "rgba(255,255,255,0.15)" : "var(--yb-border)"}` }}>
             <div onClick={() => setOpen(open === i ? null : i)} className="px-4 py-3 flex items-center gap-3 cursor-pointer">
               <span className="text-[10px] font-mono w-5" style={{ color: "var(--yb-text-muted)" }}>{String(i + 1).padStart(2, "0")}</span>
               <div className="flex-1 min-w-0">

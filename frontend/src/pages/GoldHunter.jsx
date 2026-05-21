@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getSwarmStatus, startSwarm, stopSwarm, runSwarmOnce, runAgent,
   GoldFinding, getVaultSummary, VaultEntry
@@ -66,9 +66,10 @@ export default function GoldHunter() {
     load();
   };
 
-  const filteredFindings = findingFilter === "all"
-    ? findings
-    : findings.filter((f) => f.agent_role === findingFilter);
+  const filteredFindings = useMemo(() =>
+    findingFilter === "all" ? findings : findings.filter((f) => f.agent_role === findingFilter),
+    [findings, findingFilter]
+  );
 
   const agents = swarm?.agents || [];
   const isRunning = swarm?.swarm_running;
@@ -241,7 +242,7 @@ export default function GoldHunter() {
               {isOpen && agent.log_entries?.length > 0 && (
                 <div className="border-t px-3 py-2 max-h-32 overflow-y-auto" style={{ borderColor: "var(--yb-border)", background: "#0a0a0a" }}>
                   {agent.log_entries.map((entry, i) => (
-                    <p key={i} className="text-[10px] font-mono leading-relaxed" style={{ color: "var(--yb-text-muted)" }}>
+                    <p key={`${agent.role}-log-${i}`} className="text-[10px] font-mono leading-relaxed" style={{ color: "var(--yb-text-muted)" }}>
                       {entry}
                     </p>
                   ))}

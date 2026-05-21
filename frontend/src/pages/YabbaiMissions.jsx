@@ -33,7 +33,7 @@ export default function YabbaiMissions() {
     tickRef.current = setInterval(async () => {
       for (const m of missions) {
         if (m.status === "active") {
-          try { await axios.post(`${API}/yabbai/missions/${m.id}/tick`); } catch {}
+          try { await axios.post(`${API}/yabbai/missions/${m.id}/tick`); } catch (err) { console.error(`Tick failed for mission ${m.id}:`, err); }
         }
       }
       load();

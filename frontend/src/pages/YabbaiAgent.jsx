@@ -12,8 +12,8 @@ export default function YabbaiAgent() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    axios.get(`${API}/yabbai/agent/history`).then((r) => setMessages(r.data || [])).catch(() => {});
-  }, []);
+    axios.get(`${API}/yabbai/agent/history`).then((r) => setMessages(r.data || [])).catch((err) => { console.error("Failed to load agent history:", err); });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- API constant, only run on mount
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -56,7 +56,7 @@ export default function YabbaiAgent() {
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+          <div key={m.id || `msg-${i}-${m.role}`} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div className="max-w-[75%] rounded-sm px-4 py-3" style={{
               background: m.role === "user" ? "rgba(0,240,255,0.1)" : "rgba(247,183,49,0.05)",
               border: `1px solid ${m.role === "user" ? "rgba(0,240,255,0.2)" : "rgba(247,183,49,0.1)"}`,

@@ -16,7 +16,9 @@ export default function YabbaiLanding() {
     try {
       await axios.post(`${API}/yabbai/early-access`, { email, wallet_address: wallet });
       setSubmitted(true);
-    } catch {}
+    } catch (err) {
+      console.error("Early access submission failed:", err);
+    }
   };
 
   return (

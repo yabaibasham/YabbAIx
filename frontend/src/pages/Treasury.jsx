@@ -195,7 +195,7 @@ export default function Treasury() {
           <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--yb-gold)" }}>Distribution Log</p>
           <div className="space-y-0.5 max-h-64 overflow-y-auto">
             {(t.log_entries || []).map((entry, i) => (
-              <p key={i} className="text-[11px] font-mono leading-relaxed" style={{
+              <p key={`log-${i}-${entry.slice(1,20)}`} className="text-[11px] font-mono leading-relaxed" style={{
                 color: entry.includes("ERROR") || entry.includes("FAILED") ? "#ef4444"
                   : entry.includes("OK") || entry.includes("COMPLETE") ? "#22c55e"
                     : entry.includes("TIER") ? "var(--yb-gold)"
@@ -220,7 +220,7 @@ export default function Treasury() {
             </p>
           ) : (
             history.map((w, i) => (
-              <div key={i} className="rounded-sm p-4 flex items-center gap-4" style={{ background: "var(--yb-surface-1)", border: "1px solid var(--yb-border)" }}>
+              <div key={w.id || `hist-${i}-${w.tx_hash?.slice(0,8)}`} className="rounded-sm p-4 flex items-center gap-4" style={{ background: "var(--yb-surface-1)", border: "1px solid var(--yb-border)" }}>
                 <ArrowDownToLine size={16} style={{ color: "var(--yb-gold)" }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium" style={{ color: "var(--yb-text-primary)" }}>{w.source}</p>
@@ -269,7 +269,7 @@ export default function Treasury() {
             <div className="rounded-sm p-4" style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)" }}>
               <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#ef4444" }}>Active Issues</p>
               {watchdog.issues_detected.map((issue, i) => (
-                <div key={i} className="flex items-center gap-2 py-1.5" style={{ borderBottom: "1px solid rgba(239,68,68,0.1)" }}>
+                <div key={`issue-${issue.component}-${i}`} className="flex items-center gap-2 py-1.5" style={{ borderBottom: "1px solid rgba(239,68,68,0.1)" }}>
                   <AlertTriangle size={12} style={{ color: issue.severity === "critical" ? "#ef4444" : "#f59e0b" }} />
                   <span className="text-xs font-mono" style={{ color: "var(--yb-text-secondary)" }}>{issue.component}: {issue.error}</span>
                   <span className="text-[10px] ml-auto" style={{ color: issue.severity === "critical" ? "#ef4444" : "#f59e0b" }}>{issue.severity}</span>
@@ -281,7 +281,7 @@ export default function Treasury() {
           <div className="rounded-sm p-4" style={{ background: "var(--yb-surface-1)", border: "1px solid var(--yb-border)" }}>
             <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--yb-text-muted)" }}>Watchdog Log</p>
             {(watchdog.log_entries || []).map((entry, i) => (
-              <p key={i} className="text-[11px] font-mono leading-relaxed" style={{
+              <p key={`wlog-${i}-${entry.slice(1,20)}`} className="text-[11px] font-mono leading-relaxed" style={{
                 color: entry.includes("issues") ? "#f59e0b" : entry.includes("OK") ? "#22c55e" : "var(--yb-text-muted)",
               }}>{entry}</p>
             ))}

@@ -48,7 +48,7 @@ export default function LegalColony() {
         {AUDITS.map((a, i) => {
           const open = active === i;
           return (
-            <div key={i} data-testid={`audit-${i}`} className="rounded-sm overflow-hidden transition-all" style={{ background: "var(--yb-surface-1)", border: `1px solid ${a.score >= 90 ? "rgba(239,68,68,0.2)" : "var(--yb-border)"}` }}>
+            <div key={`audit-${a.firm}`} data-testid={`audit-${i}`} className="rounded-sm overflow-hidden transition-all" style={{ background: "var(--yb-surface-1)", border: `1px solid ${a.score >= 90 ? "rgba(239,68,68,0.2)" : "var(--yb-border)"}` }}>
               <div className="p-4 cursor-pointer" onClick={() => setActive(open ? null : i)}>
                 <div className="flex items-start justify-between gap-3">
                   <div>

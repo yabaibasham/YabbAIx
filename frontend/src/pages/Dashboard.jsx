@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { getDashboardData } from "@/api/entities";
 import { NavLink } from "react-router-dom";
 import { TrendingUp, Layers, Zap, ArrowUpRight, ChevronDown } from "lucide-react";
@@ -34,29 +34,36 @@ export default function Dashboard() {
   useEffect(() => { load(); }, [load]);
   useEffect(() => { const iv = setInterval(() => load(), 30000); return () => clearInterval(iv); }, [load]);
 
+  const timelines = data?.timelines || [];
+  const assets = data?.assets || [];
+  const findings = data?.gold_findings || [];
+  const vault = data?.vault_summary || {};
+
+  const dashStats = useMemo(() => {
+    const live = timelines.filter((t) => t.status !== "Culled");
+    const avgSig = live.length ? Math.round(live.reduce((a, b) => a + (b.profit_signal || 0), 0) / live.length) : 0;
+    return {
+      live,
+      avgSig,
+      stats: [
+        { v: live.length, l: "Colonies", c: "var(--yb-text-primary)" },
+        { v: live.filter((t) => t.status === "Scaling").length, l: "Scaling", c: "#22c55e" },
+        { v: findings.filter((f) => f.status === "PENDING_EXECUTION").length, l: "Gold Pending", c: "var(--yb-gold)" },
+        { v: avgSig, l: "Avg Signal", c: sigColor(avgSig) },
+        { v: `$${Math.round(vault.total_income || 0).toLocaleString()}`, l: "Vault Income", c: "#22c55e" },
+        { v: assets.length, l: "Assets", c: "#a78bfa" },
+      ],
+    };
+  }, [timelines, assets, findings, vault]);
+  const { live, avgSig, stats } = dashStats;
+
+  const toggle = (id) => setExpanded((e) => ({ ...e, [id]: !e[id] }));
+
   if (loading) return (
     <div className="flex items-center justify-center py-32">
       <div className="w-5 h-5 border-2 border-white/10 border-t-amber-400 rounded-full animate-spin" />
     </div>
   );
-
-  const timelines = data?.timelines || [];
-  const assets = data?.assets || [];
-  const findings = data?.gold_findings || [];
-  const vault = data?.vault_summary || {};
-  const live = timelines.filter((t) => t.status !== "Culled");
-  const avgSig = live.length ? Math.round(live.reduce((a, b) => a + (b.profit_signal || 0), 0) / live.length) : 0;
-
-  const stats = [
-    { v: live.length, l: "Colonies", c: "var(--yb-text-primary)" },
-    { v: live.filter((t) => t.status === "Scaling").length, l: "Scaling", c: "#22c55e" },
-    { v: findings.filter((f) => f.status === "PENDING_EXECUTION").length, l: "Gold Pending", c: "var(--yb-gold)" },
-    { v: avgSig, l: "Avg Signal", c: sigColor(avgSig) },
-    { v: `$${Math.round(vault.total_income || 0).toLocaleString()}`, l: "Vault Income", c: "#22c55e" },
-    { v: assets.length, l: "Assets", c: "#a78bfa" },
-  ];
-
-  const toggle = (id) => setExpanded((e) => ({ ...e, [id]: !e[id] }));
 
   return (
     <div data-testid="dashboard-page" className="max-w-6xl mx-auto px-4 py-6 space-y-5">

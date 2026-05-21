@@ -76,7 +76,7 @@ export default function Rover() {
               <div>
                 <p className="text-[10px] uppercase tracking-widest mb-2" style={{ color: "var(--yb-text-muted)" }}>Detected</p>
                 {names.slice(0, 5).map((n, i) => (
-                  <div key={i} className="flex justify-between text-[11px] mb-1">
+                  <div key={`${n}-${i}`} className="flex justify-between text-[11px] mb-1">
                     <span className="truncate" style={{ color: "var(--yb-text-secondary)", maxWidth: 100 }}>{n}</span>
                     <span style={{ color: "#22c55e" }}>{detect(n)}</span>
                   </div>
@@ -103,7 +103,7 @@ export default function Rover() {
             const open = active === i;
             const urgency = a.score >= 88 ? "Critical" : a.score >= 75 ? "High" : "Moderate";
             return (
-              <div key={i} className="rounded-sm overflow-hidden" style={{ background: "var(--yb-surface-1)", border: open ? "1px solid rgba(255,255,255,0.15)" : "1px solid var(--yb-border)" }}>
+              <div key={`audit-${a.name}-${i}`} className="rounded-sm overflow-hidden" style={{ background: "var(--yb-surface-1)", border: open ? "1px solid rgba(255,255,255,0.15)" : "1px solid var(--yb-border)" }}>
                 <div className="px-5 py-3 flex items-center gap-4 cursor-pointer" onClick={() => setActive(open ? null : i)}>
                   <span className="text-[10px] font-mono" style={{ color: "var(--yb-text-muted)" }}>{i + 1}</span>
                   <div className="flex-1 min-w-0">

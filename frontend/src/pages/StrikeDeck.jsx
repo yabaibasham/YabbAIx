@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Lead, Signal } from "@/api/entities";
 
 const STATUSES = ["Discovered", "Email Drafted", "Sent", "Opened", "Replied", "Closed", "Dead"];
@@ -32,11 +32,15 @@ export default function StrikeDeck() {
   useEffect(() => { load(); }, [load]);
 
   const filtered = leads;
-  const closed = filtered.filter((l) => l.status === "Closed");
-  const revenue = closed.reduce((s, l) => s + (l.revenue || 1500), 0);
-  const sent = filtered.filter((l) => ["Sent", "Opened", "Replied", "Closed"].includes(l.status));
-  const replied = filtered.filter((l) => l.status === "Replied");
-  const replyRate = sent.length > 0 ? Math.round((replied.length + closed.length) / sent.length * 100) : 0;
+  const pipelineStats = useMemo(() => {
+    const closed = filtered.filter((l) => l.status === "Closed");
+    const revenue = closed.reduce((s, l) => s + (l.revenue || 1500), 0);
+    const sent = filtered.filter((l) => ["Sent", "Opened", "Replied", "Closed"].includes(l.status));
+    const replied = filtered.filter((l) => l.status === "Replied");
+    const replyRate = sent.length > 0 ? Math.round((replied.length + closed.length) / sent.length * 100) : 0;
+    return { closed, revenue, sent, replied, replyRate };
+  }, [filtered]);
+  const { closed, revenue, sent, replied, replyRate } = pipelineStats;
 
   const openLead = (lead) => {
     setSelected(lead);

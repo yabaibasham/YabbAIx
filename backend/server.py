@@ -1658,6 +1658,8 @@ async def agent_chat(data: AgentMessage):
     model_map = {"grok-3": "grok-3-beta", "grok-3-mini": "grok-3-mini-beta", "grok-4": "grok-4"}
     api_model = model_map.get(data.model, data.model)
 
+    reply = None  # Initialize to avoid undefined variable on edge paths
+
     try:
         # Try xAI direct first
         xai_key = os.environ.get("XAI_API_KEY", "")
@@ -1689,8 +1691,8 @@ async def agent_chat(data: AgentMessage):
                 "openai",
                 "gpt-5.2",
             )
-        except Exception as e2:
-            reply = f"Agent connection error. Both xAI and fallback failed."
+        except Exception:
+            reply = "Agent connection error. Both xAI and fallback failed."
 
     # Save both messages
     user_doc = {"id": str(uuid.uuid4()), "wallet_address": data.wallet_address, "role": "user", "content": data.message, "model": data.model, "created_date": now}
